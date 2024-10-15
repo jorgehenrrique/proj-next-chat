@@ -13,6 +13,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@socket.io/admin-ui": "^0.5.1",
     "dotenv": "^16.4.5",
     "next": "14.2.15",
     "react": "^18",

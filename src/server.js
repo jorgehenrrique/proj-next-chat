@@ -2,6 +2,7 @@ import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
 import { Server } from 'socket.io';
+import { instrument } from '@socket.io/admin-ui';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -20,7 +21,21 @@ app.prepare().then(() => {
     handle(req, res, parsedUrl);
   });
 
-  const io = new Server(server);
+  const io = new Server(server, {
+    cors: {
+      origin: ['https://admin.socket.io'],
+      credentials: true,
+    },
+  });
+
+  instrument(io, {
+    auth: {
+      type: 'basic',
+      username: 'admin',
+      password: '$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS', // "changeit" encrypted with bcrypt
+    },
+    mode: 'development',
+  });
 
   io.on('connection', (socket) => {
     console.log('Um cliente se conectou');
