@@ -44,10 +44,10 @@ export default function RoomList() {
         <ul className='space-y-2'>
           {roomData.rooms &&
             roomData.rooms.map((room) => (
-              <li key={room}>
-                <Link href={`/chat/${room}`}>
+              <li key={room.id}>
+                <Link href={`/chat/${room.id}`}>
                   <Button variant='outline' className='w-full'>
-                    {room}
+                    {room.name}
                   </Button>
                 </Link>
               </li>

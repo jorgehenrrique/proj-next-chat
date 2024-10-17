@@ -13,10 +13,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { RoomListData } from '@/types/types';
+import { Room, RoomListData } from '@/types/types';
+import { Checkbox } from './ui/checkbox';
 
 export default function CreateRoomModal() {
   const [roomName, setRoomName] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [roomData, setRoomData] = useState<RoomListData>({
     rooms: [],
@@ -34,9 +37,34 @@ export default function CreateRoomModal() {
         setRoomData(data);
         setIsLoading(false);
       });
-      socket.on('room created', (room: string) => {
+      socket.on('room created', (room: Room) => {
         setIsOpen(false);
-        router.push(`/chat/${room}`);
+        // router.push(`/chat/${room}`);
+        if (room.isPrivate) {
+          const link = `${window.location.origin}/chat/${room.id}`;
+          toast({
+            title: 'Sala privada criada',
+            description: `Clique em copiar para compartilhar o link da sala com seus amigos.\nVocê será redirecionado automaticamente para a sala.`,
+            action: (
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(link);
+                  toast({
+                    title: 'Link copiado para a área de transferência',
+                  });
+                }}
+              >
+                Copiar
+              </Button>
+            ),
+          });
+
+          setTimeout(() => {
+            router.push(`/chat/${room.id}`);
+          }, 2000);
+        } else {
+          router.push(`/chat/${room.id}`);
+        }
       });
       socket.on('room exists', (room: string) => {
         toast({
@@ -66,7 +94,12 @@ export default function CreateRoomModal() {
 
   const handleCreateRoom = () => {
     if (roomName.trim() && socket) {
-      socket.emit('create room', roomName.trim());
+      // socket.emit('create room', roomName.trim());
+      socket.emit('create room', {
+        name: roomName.trim(),
+        isPrivate,
+        password: isPrivate ? password : null,
+      });
     }
   };
 
@@ -93,11 +126,28 @@ export default function CreateRoomModal() {
           onChange={(e) => setRoomName(e.target.value)}
           placeholder='Nome da sala'
         />
+        <div className='flex items-center space-x-2'>
+          <Checkbox
+            id='isPrivate'
+            checked={isPrivate}
+            onCheckedChange={(checked) => setIsPrivate(checked as boolean)}
+          />
+          <label htmlFor='isPrivate'>Sala Privada</label>
+        </div>
+        {isPrivate && (
+          <Input
+            type='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder='Senha da sala'
+          />
+        )}
         <Button
           onClick={handleCreateRoom}
           disabled={
             !roomName.trim() ||
-            roomData?.rooms?.includes(roomName.trim()) ||
+            // roomData?.rooms?.includes(roomName.trim()) ||
+            roomData.rooms.some((room) => room.name === roomName.trim()) ||
             roomData?.rooms?.length >= roomData?.limit
           }
         >
