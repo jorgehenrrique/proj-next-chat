@@ -12,23 +12,11 @@ export default function DynamicChatRoom() {
   const roomId = params.roomId as string;
   const router = useRouter();
   const socket = useSocket();
-  // const [roomExists, setRoomExists] = useState(false);
   const [loading, setLoading] = useState(true);
   const [room, setRoom] = useState<Room | null>(null);
   const [needPassword, setNeedPassword] = useState(false);
 
   useEffect(() => {
-    // if (socket) {
-    //   socket.emit('get rooms');
-    //   socket.on('room list', (data: RoomListData) => {
-    //     if (data.rooms.some((room) => room.id === roomId)) {
-    //       setRoomExists(true);
-    //     } else {
-    //       router.push('/');
-    //     }
-    //     setLoading(false);
-    //   });
-    // }
     if (socket) {
       socket.emit('get room', roomId);
       socket.on('room info', (roomInfo: Room | null) => {
@@ -55,7 +43,6 @@ export default function DynamicChatRoom() {
       if (success) {
         setNeedPassword(false);
       } else {
-        // Mostrar mensagem de erro
         toast({
           title: 'Senha incorreta',
           description: 'A senha da sala está incorreta.',
@@ -69,9 +56,6 @@ export default function DynamicChatRoom() {
     return <div>Carregando...</div>;
   }
 
-  // if (!roomExists) {
-  //   return null;
-  // }
   if (!room) {
     return null;
   }

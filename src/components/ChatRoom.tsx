@@ -1,14 +1,12 @@
 'use client';
+
 import { useState, useEffect, FormEvent } from 'react';
 import ChatMessage from './ChatMessage';
 import { useSocket } from '@/hooks/useSocket';
+import UsernamePrompt from './UsernamePrompt';
+import { useUser } from '@/contexts/UserContext';
+import { Message } from '@/types/types';
 
-interface Message {
-  id: string;
-  text: string;
-  user: string;
-  roomId: string;
-}
 interface ChatRoomProps {
   roomId: string;
 }
@@ -16,37 +14,29 @@ interface ChatRoomProps {
 export default function ChatRoom({ roomId }: ChatRoomProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [username, setUsername] = useState('');
+  const { user, updateUser } = useUser();
   const socket = useSocket();
 
   useEffect(() => {
-    if (!username) {
-      const name = prompt('Por favor, digite seu nome:');
-      setUsername(name || 'Anônimo');
-    }
-
-    // socket.on('message', (msg: Message) => {
-    //   setMessages((prevMessages) => [...prevMessages, msg]);
-    // });
-
-    if (socket) {
+    if (socket && user) {
       socket.emit('join room', roomId);
 
       socket.on('message', (msg: Message) => {
         setMessages((prevMessages) => [...prevMessages, msg]);
       });
     }
+    console.log(user);
 
     return () => {
-      // socket.off('message');
       if (socket) {
         socket.emit('leave room', roomId);
         socket.off('message');
       }
     };
-  }, [socket, username, roomId]);
+  }, [socket, user, roomId]);
 
   if (!socket) return <div>Conectando...</div>;
+  if (!user) return <UsernamePrompt onSubmit={updateUser} />;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -54,7 +44,8 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
       const newMessage: Message = {
         id: Date.now().toString(),
         text: inputMessage.trim(),
-        user: username,
+        userId: user.id,
+        username: user.name,
         roomId: roomId,
       };
       socket.emit('message', newMessage);
@@ -69,7 +60,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           <ChatMessage
             key={msg.id}
             message={msg}
-            isOwnMessage={msg.user === username}
+            isOwnMessage={msg.userId === user.id}
           />
         ))}
       </div>

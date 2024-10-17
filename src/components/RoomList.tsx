@@ -8,8 +8,10 @@ import { RoomListData } from '@/types/types';
 
 export default function RoomList() {
   const [roomData, setRoomData] = useState<RoomListData>({
-    rooms: [],
-    limit: 0,
+    publicRooms: [],
+    privateRooms: [],
+    publicLimit: 0,
+    privateLimit: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSocket();
@@ -42,8 +44,8 @@ export default function RoomList() {
       </CardHeader>
       <CardContent>
         <ul className='space-y-2'>
-          {roomData.rooms &&
-            roomData.rooms.map((room) => (
+          {roomData.publicRooms &&
+            roomData.publicRooms.map((room) => (
               <li key={room.id}>
                 <Link href={`/chat/${room.id}`}>
                   <Button variant='outline' className='w-full'>

@@ -9,12 +9,17 @@ import { v4 as uuid } from 'uuid';
 
 dotenv.config();
 
-// const rooms = new Set(['global']);
 const rooms = new Map();
 const globalRoom = { id: 'global', name: 'global', isPrivate: false };
 rooms.set(globalRoom.id, globalRoom);
 
-const { HOSTNAME, PORT, ADMIN_USERNAME, ROOM_LIMIT } = process.env;
+const {
+  HOSTNAME,
+  PORT,
+  ADMIN_USERNAME,
+  ROOM_PUBLIC_LIMIT,
+  ROOM_PRIVATE_LIMIT,
+} = process.env;
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = HOSTNAME;
@@ -47,54 +52,51 @@ app.prepare().then(async () => {
   io.on('connection', (socket) => {
     console.log('Um cliente se conectou');
 
-    // socket.on('message', (msg) => {
-    //   io.emit('message', msg);
-    // });
-
-    // get rooms
-    // socket.on('get rooms', () => {
-    //   socket.emit('room list', {
-    //     rooms: Array.from(rooms),
-    //     limit: parseInt(ROOM_LIMIT, 10),
-    //   });
-    // });
     socket.on('get rooms', () => {
       const publicRooms = Array.from(rooms.values()).filter(
         (room) => !room.isPrivate
       );
+      const privateRooms = Array.from(rooms.values()).filter(
+        (room) => room.isPrivate
+      );
       socket.emit('room list', {
-        rooms: publicRooms,
-        limit: parseInt(ROOM_LIMIT, 10),
+        publicRooms: publicRooms,
+        privateRooms: privateRooms,
+        publicLimit: +ROOM_PUBLIC_LIMIT,
+        privateLimit: +ROOM_PRIVATE_LIMIT,
       });
     });
 
-    // create room
-    // socket.on('create room', (roomName) => {
-    //   if (!rooms.has(roomName) && rooms.size < parseInt(ROOM_LIMIT, 10)) {
-    //     rooms.add(roomName);
-    //     // io.emit('room list', Array.from(rooms));
-    //     io.emit('room list', {
-    //       rooms: Array.from(rooms),
-    //       limit: parseInt(ROOM_LIMIT, 10),
-    //     });
-    //     socket.emit('room created', roomName);
-    //   } else if (rooms.has(roomName)) {
-    //     socket.emit('room exists', roomName);
-    //   } else {
-    //     socket.emit('room limit reached');
-    //   }
-    // });
     socket.on('create room', ({ name, isPrivate, password }) => {
       const roomNameExists = Array.from(rooms.values()).some(
         (room) => room.name === name && !room.isPrivate
       );
-      if (!roomNameExists && rooms.size < parseInt(ROOM_LIMIT, 10)) {
+      let roomLimit = 0;
+      let roomSize = 0;
+      if (isPrivate) {
+        roomLimit = +ROOM_PRIVATE_LIMIT;
+        roomSize = Array.from(rooms.values()).filter(
+          (room) => room.isPrivate
+        ).length;
+      } else {
+        roomLimit = +ROOM_PUBLIC_LIMIT;
+        roomSize = Array.from(rooms.values()).filter(
+          (room) => !room.isPrivate
+        ).length;
+      }
+      if (!roomNameExists && roomSize < roomLimit) {
         const roomId = uuid();
         const newRoom = { id: roomId, name, isPrivate, password };
         rooms.set(roomId, newRoom);
         io.emit('room list', {
-          rooms: Array.from(rooms.values()).filter((room) => !room.isPrivate),
-          limit: parseInt(ROOM_LIMIT, 10),
+          publicRooms: Array.from(rooms.values()).filter(
+            (room) => !room.isPrivate
+          ),
+          privateRooms: Array.from(rooms.values()).filter(
+            (room) => room.isPrivate
+          ),
+          publicLimit: +ROOM_PUBLIC_LIMIT,
+          privateLimit: +ROOM_PRIVATE_LIMIT,
         });
         socket.emit('room created', { id: roomId, name, isPrivate });
       } else if (roomNameExists) {

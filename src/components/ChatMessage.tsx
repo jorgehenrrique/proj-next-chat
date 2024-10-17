@@ -1,10 +1,4 @@
-interface MessageProps {
-  message: {
-    text: string;
-    user: string;
-  };
-  isOwnMessage: boolean;
-}
+import { MessageProps } from '@/types/types';
 
 export default function ChatMessage({ message, isOwnMessage }: MessageProps) {
   return (
@@ -14,7 +8,7 @@ export default function ChatMessage({ message, isOwnMessage }: MessageProps) {
           isOwnMessage ? 'bg-blue-500 text-black' : 'bg-gray-200'
         }`}
       >
-        <strong>{message.user}: </strong>
+        <strong>{message.username}: </strong>
         {message.text}
       </span>
     </div>

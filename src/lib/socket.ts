@@ -1,6 +1,6 @@
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
-export const initSocket = () => {
-  const socket = io();
-  return socket;
-};
+// export const initSocket = () => {
+//   const socket = io();
+//   return socket;
+// };

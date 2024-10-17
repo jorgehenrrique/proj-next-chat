@@ -22,8 +22,10 @@ export default function CreateRoomModal() {
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [roomData, setRoomData] = useState<RoomListData>({
-    rooms: [],
-    limit: 0,
+    publicRooms: [],
+    privateRooms: [],
+    publicLimit: 0,
+    privateLimit: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSocket();
@@ -39,7 +41,6 @@ export default function CreateRoomModal() {
       });
       socket.on('room created', (room: Room) => {
         setIsOpen(false);
-        // router.push(`/chat/${room}`);
         if (room.isPrivate) {
           const link = `${window.location.origin}/chat/${room.id}`;
           toast({
@@ -94,7 +95,6 @@ export default function CreateRoomModal() {
 
   const handleCreateRoom = () => {
     if (roomName.trim() && socket) {
-      // socket.emit('create room', roomName.trim());
       socket.emit('create room', {
         name: roomName.trim(),
         isPrivate,
@@ -110,7 +110,13 @@ export default function CreateRoomModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button disabled={roomData.rooms?.length >= roomData.limit}>
+        <Button
+        // disabled={
+        //   isPrivate
+        //     ? roomData.privateRooms?.length >= roomData.privateLimit
+        //     : roomData.publicRooms?.length >= roomData.publicLimit
+        // }
+        >
           Criar Nova Sala
         </Button>
       </DialogTrigger>
@@ -146,9 +152,12 @@ export default function CreateRoomModal() {
           onClick={handleCreateRoom}
           disabled={
             !roomName.trim() ||
-            // roomData?.rooms?.includes(roomName.trim()) ||
-            roomData.rooms.some((room) => room.name === roomName.trim()) ||
-            roomData?.rooms?.length >= roomData?.limit
+            roomData.publicRooms?.some(
+              (room) => room.name === roomName.trim()
+            ) ||
+            (isPrivate
+              ? roomData.privateRooms?.length >= roomData.privateLimit
+              : roomData.publicRooms?.length >= roomData.publicLimit)
           }
         >
           Criar
