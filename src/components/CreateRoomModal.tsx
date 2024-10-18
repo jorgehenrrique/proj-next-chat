@@ -41,11 +41,14 @@ export default function CreateRoomModal() {
       });
       socket.on('room created', (room: Room) => {
         setIsOpen(false);
+        setRoomName('');
+        setIsPrivate(false);
+        setPassword('');
         if (room.isPrivate) {
           const link = `${window.location.origin}/chat/${room.id}`;
           toast({
             title: 'Sala privada criada',
-            description: `Clique em copiar para compartilhar o link da sala com seus amigos.\nVocê será redirecionado automaticamente para a sala.`,
+            description: `Clique em copiar para compartilhar o link da sala com seus amigos.\nA sala será aberta em uma nova janela.`,
             action: (
               <Button
                 onClick={() => {
@@ -61,8 +64,8 @@ export default function CreateRoomModal() {
           });
 
           setTimeout(() => {
-            router.push(`/chat/${room.id}`);
-          }, 2000);
+            window.open(`/chat/${room.id}`, '_blank');
+          }, 1000);
         } else {
           router.push(`/chat/${room.id}`);
         }

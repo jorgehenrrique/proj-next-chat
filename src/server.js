@@ -20,6 +20,10 @@ const {
   ADMIN_USERNAME,
   ROOM_PUBLIC_LIMIT,
   ROOM_PRIVATE_LIMIT,
+  CHECK_PUBLIC_ROOMS_INTERVAL,
+  CHECK_PRIVATE_ROOMS_INTERVAL,
+  PUBLIC_ROOM_LIFETIME,
+  PRIVATE_ROOM_LIFETIME,
 } = process.env;
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -51,7 +55,7 @@ app.prepare().then(async () => {
   });
 
   io.on('connection', (socket) => {
-    console.log('Um cliente se conectou');
+    console.log('Um cliente se conectou'); // log
 
     socket.on('get rooms', () => {
       const publicRooms = Array.from(rooms.values()).filter(
@@ -95,6 +99,7 @@ app.prepare().then(async () => {
           name,
           isPrivate,
           password: hashedPassword,
+          lastActivity: Date.now(),
         };
         rooms.set(roomId, newRoom);
         io.emit('room list', {
@@ -138,6 +143,7 @@ app.prepare().then(async () => {
         (await bcrypt.compare(password, room.password))
       ) {
         socket.join(roomId);
+        if (room) room.lastActivity = Date.now();
         socket.emit('join result', true);
       } else {
         socket.emit('join result', false);
@@ -147,25 +153,60 @@ app.prepare().then(async () => {
     // join room
     socket.on('join room', (roomId) => {
       socket.join(roomId);
-      console.log(`Cliente entrou na sala ${roomId}`);
+      const room = rooms.get(roomId);
+      if (room) room.lastActivity = Date.now();
+      console.log(`Cliente entrou na sala: ${room.name}-${roomId}`); // log
     });
 
     // leave room
     socket.on('leave room', (roomId) => {
       socket.leave(roomId);
-      console.log(`Cliente saiu da sala ${roomId}`);
+      console.log(`Cliente saiu da sala ${roomId}`); // log
     });
 
     // message
     socket.on('message', (msg) => {
       io.to(msg.roomId).emit('message', msg);
+      const room = rooms.get(msg.roomId);
+      if (room) room.lastActivity = Date.now();
     });
 
     // disconnect
     socket.on('disconnect', () => {
-      console.log('Um cliente se desconectou');
+      console.log('Um cliente se desconectou'); // log
     });
   });
+
+  // check rooms for inactivity
+  const checkAndCleanRooms = (isPrivate) => {
+    const currentTime = Date.now();
+    const lifetime = isPrivate ? PRIVATE_ROOM_LIFETIME : PUBLIC_ROOM_LIFETIME;
+
+    rooms.forEach((room, roomId) => {
+      if (room.isPrivate === isPrivate && roomId !== 'global') {
+        const timeSinceLastActivity = currentTime - room.lastActivity;
+        if (timeSinceLastActivity > lifetime) {
+          console.log(`Removendo sala inativa: ${room.name}`);
+          rooms.delete(roomId);
+          io.in(roomId).emit('room deleted', roomId);
+          io.in(roomId).disconnectSockets(true);
+        }
+      }
+    });
+
+    // Emitir lista atualizada de salas após a limpeza
+    io.emit('room list', {
+      publicRooms: Array.from(rooms.values()).filter((room) => !room.isPrivate),
+      privateRooms: Array.from(rooms.values()).filter((room) => room.isPrivate),
+      publicLimit: +ROOM_PUBLIC_LIMIT,
+      privateLimit: +ROOM_PRIVATE_LIMIT,
+    });
+  };
+
+  // Agendar verificações periódicas
+  setInterval(() => checkAndCleanRooms(false), CHECK_PUBLIC_ROOMS_INTERVAL);
+  setInterval(() => checkAndCleanRooms(true), CHECK_PRIVATE_ROOMS_INTERVAL);
+  //
 
   server.listen(port, (err) => {
     if (err) throw err;
