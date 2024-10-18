@@ -95,6 +95,14 @@ export default function CreateRoomModal() {
 
   const handleCreateRoom = () => {
     if (roomName.trim() && socket) {
+      // if (isPrivate && !password.trim()) {
+      //   toast({
+      //     title: 'Senha necessária',
+      //     description: 'Por favor, forneça uma senha para a sala privada.',
+      //     variant: 'destructive',
+      //   });
+      //   return;
+      // }
       socket.emit('create room', {
         name: roomName.trim(),
         isPrivate,
@@ -111,11 +119,10 @@ export default function CreateRoomModal() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-        // disabled={
-        //   isPrivate
-        //     ? roomData.privateRooms?.length >= roomData.privateLimit
-        //     : roomData.publicRooms?.length >= roomData.publicLimit
-        // }
+          disabled={
+            roomData.privateRooms?.length >= roomData.privateLimit &&
+            roomData.publicRooms?.length >= roomData.publicLimit
+          }
         >
           Criar Nova Sala
         </Button>

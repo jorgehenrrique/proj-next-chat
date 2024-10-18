@@ -6,6 +6,7 @@ import { instrument } from '@socket.io/admin-ui';
 import dotenv from 'dotenv';
 import { generateHash } from './scripts/generate-hash.js';
 import { v4 as uuid } from 'uuid';
+import bcrypt from 'bcrypt';
 
 dotenv.config();
 
@@ -65,9 +66,10 @@ app.prepare().then(async () => {
         publicLimit: +ROOM_PUBLIC_LIMIT,
         privateLimit: +ROOM_PRIVATE_LIMIT,
       });
+      // console.log(rooms);
     });
 
-    socket.on('create room', ({ name, isPrivate, password }) => {
+    socket.on('create room', async ({ name, isPrivate, password }) => {
       const roomNameExists = Array.from(rooms.values()).some(
         (room) => room.name === name && !room.isPrivate
       );
@@ -86,7 +88,14 @@ app.prepare().then(async () => {
       }
       if (!roomNameExists && roomSize < roomLimit) {
         const roomId = uuid();
-        const newRoom = { id: roomId, name, isPrivate, password };
+        let hashedPassword = null;
+        if (isPrivate) hashedPassword = await bcrypt.hash(password, 10);
+        const newRoom = {
+          id: roomId,
+          name,
+          isPrivate,
+          password: hashedPassword,
+        };
         rooms.set(roomId, newRoom);
         io.emit('room list', {
           publicRooms: Array.from(rooms.values()).filter(
@@ -121,9 +130,13 @@ app.prepare().then(async () => {
     });
 
     // entrar em uma sala privada
-    socket.on('join private room', ({ roomId, password }) => {
+    socket.on('join private room', async ({ roomId, password }) => {
       const room = rooms.get(roomId);
-      if (room && room.isPrivate && room.password === password) {
+      if (
+        room &&
+        room.isPrivate &&
+        (await bcrypt.compare(password, room.password))
+      ) {
         socket.join(roomId);
         socket.emit('join result', true);
       } else {
