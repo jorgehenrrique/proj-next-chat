@@ -6,6 +6,7 @@ import { useSocket } from '@/hooks/useSocket';
 import { Room } from '@/types/types';
 import PasswordPrompt from '@/components/PasswordPrompt';
 import { toast } from '@/hooks/use-toast';
+import { Spinner } from '@/components/Spinner';
 
 export default function DynamicChatRoom() {
   const params = useParams();
@@ -52,7 +53,7 @@ export default function DynamicChatRoom() {
     });
   };
 
-  if (loading) return <div>Carregando...</div>;
+  if (loading) return <Spinner />;
 
   if (!room) return null;
 

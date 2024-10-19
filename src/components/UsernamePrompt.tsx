@@ -25,7 +25,7 @@ export default function UsernamePrompt({ onSubmit }: UsernamePromptProps) {
 
   return (
     <Dialog open={true}>
-      <DialogContent>
+      <DialogContent className='shadow-sky-900 shadow-md'>
         <DialogHeader>
           <DialogTitle>Bem-vindo ao Chat</DialogTitle>
           <DialogDescription>

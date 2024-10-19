@@ -15,6 +15,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { Room, RoomListData } from '@/types/types';
 import { Checkbox } from './ui/checkbox';
+import Loader from './Loader/Loader';
 
 export default function CreateRoomModal() {
   const [roomName, setRoomName] = useState('');
@@ -98,14 +99,6 @@ export default function CreateRoomModal() {
 
   const handleCreateRoom = () => {
     if (roomName.trim() && socket) {
-      // if (isPrivate && !password.trim()) {
-      //   toast({
-      //     title: 'Senha necessária',
-      //     description: 'Por favor, forneça uma senha para a sala privada.',
-      //     variant: 'destructive',
-      //   });
-      //   return;
-      // }
       socket.emit('create room', {
         name: roomName.trim(),
         isPrivate,
@@ -114,7 +107,7 @@ export default function CreateRoomModal() {
     }
   };
 
-  if (isLoading) return <div>Carregando...</div>;
+  if (isLoading) return <Loader />;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -128,7 +121,7 @@ export default function CreateRoomModal() {
           Criar Nova Sala
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='shadow-sky-900 shadow-md'>
         <DialogHeader>
           <DialogTitle>Criar Nova Sala de Chat</DialogTitle>
           <DialogDescription>

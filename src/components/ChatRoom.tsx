@@ -17,6 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { SendIcon } from 'lucide-react';
+import { Spinner } from '@/components/Spinner';
 
 interface ChatRoomProps {
   roomId: string;
@@ -40,7 +42,6 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
 
   useEffect(() => {
     if (socket && user) {
-      // console.log('--user--', user);
       socket.emit('join room', roomId);
 
       socket.on('message', (msg: Message) => {
@@ -68,7 +69,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     };
   }, [socket, user, roomId, router]);
 
-  if (!socket) return <div>Conectando...</div>;
+  if (!socket) return <Spinner />;
   if (!user) return <UsernamePrompt onSubmit={updateUser} />;
 
   const handleSubmit = (e: FormEvent) => {
@@ -93,7 +94,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
       {/* <CardTitle>Chat Room: {roomId}</CardTitle> */}
       {/* </CardHeader> */}
       {/* <CardContent className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"> */}
-      <CardContent className='flex-grow overflow-y-auto my-1'>
+      <CardContent className='flex-grow overflow-y-auto my-1 shadow-sky-800 shadow-lg rounded-lg'>
         {messages.map((msg) => (
           <ChatMessage
             key={msg.id}
@@ -114,9 +115,9 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           />
           <Button
             type='submit'
-            className='bg-blue-600 hover:bg-blue-700 text-white'
+            className='bg-sky-500 hover:bg-sky-800 text-white'
           >
-            Enviar
+            <SendIcon className='w-4 h-4' />
           </Button>
         </form>
       </CardFooter>

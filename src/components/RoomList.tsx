@@ -5,6 +5,7 @@ import { useSocket } from '@/hooks/useSocket';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { RoomListData } from '@/types/types';
+import Loader from './Loader/Loader';
 
 export default function RoomList() {
   const [roomData, setRoomData] = useState<RoomListData>({
@@ -33,7 +34,7 @@ export default function RoomList() {
     };
   }, [socket]);
 
-  if (isLoading) return <div>Carregando...</div>;
+  if (isLoading) return <Loader />;
 
   return (
     <Card className='w-full max-w-md'>
