@@ -150,14 +150,22 @@ export default function CreateRoomModal() {
           />
           <label htmlFor='isPrivate'>Sala Privada</label>
         </div>
-        {isPrivate && (
+        {/* {isPrivate && ( */}
+        <div
+          className={`transition-all duration-300 ease-in-out ${
+            isPrivate
+              ? 'opacity-100 max-h-20 overflow-visible'
+              : 'opacity-0 max-h-0 overflow-hidden'
+          }`}
+        >
           <Input
             type='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder='Senha da sala'
+            placeholder='Senha da sala (opcional)'
           />
-        )}
+        </div>
+        {/* )} */}
         <Button
           onClick={handleCreateRoom}
           disabled={
