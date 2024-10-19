@@ -3,10 +3,15 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+function generateRandomColor() {
+  const hue = Math.floor(Math.random() * 360);
+  return `hsl(${hue}, 70%, 50%)`;
+}
+
 interface User {
   id: string;
   name: string;
-  color?: string;
+  color: string;
 }
 interface UserContextType {
   user: User | null;
@@ -28,7 +33,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const updateUser = (newUsername: string) => {
     const updatedUser = user
       ? { ...user, name: newUsername }
-      : { id: uuidv4(), name: newUsername };
+      : { id: uuidv4(), name: newUsername, color: generateRandomColor() };
     setUser(updatedUser);
     localStorage.setItem('chatUser', JSON.stringify(updatedUser));
   };

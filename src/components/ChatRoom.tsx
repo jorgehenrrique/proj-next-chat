@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, useRef } from 'react';
 import ChatMessage from './ChatMessage';
 import { useSocket } from '@/hooks/useSocket';
 import UsernamePrompt from './UsernamePrompt';
@@ -8,6 +8,15 @@ import { useUser } from '@/contexts/UserContext';
 import { Message } from '@/types/types';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface ChatRoomProps {
   roomId: string;
@@ -19,10 +28,19 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   const { user, updateUser } = useUser();
   const socket = useSocket();
   const router = useRouter();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     if (socket && user) {
-      console.log('--user--', user);
+      // console.log('--user--', user);
       socket.emit('join room', roomId);
 
       socket.on('message', (msg: Message) => {
@@ -61,6 +79,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         text: inputMessage.trim(),
         userId: user.id,
         username: user.name,
+        color: user.color,
         roomId: roomId,
       };
       socket.emit('message', newMessage);
@@ -69,8 +88,12 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   };
 
   return (
-    <div className='flex flex-col h-[80vh]'>
-      <div className='flex-1 overflow-y-auto mb-4 p-4 bg-white text-black rounded shadow'>
+    <Card className='w-full h-[80vh] flex flex-col bg-gray-900 text-white'>
+      {/* <CardHeader> */}
+      {/* <CardTitle>Chat Room: {roomId}</CardTitle> */}
+      {/* </CardHeader> */}
+      {/* <CardContent className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"> */}
+      <CardContent className='flex-grow overflow-y-auto my-1'>
         {messages.map((msg) => (
           <ChatMessage
             key={msg.id}
@@ -78,19 +101,25 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
             isOwnMessage={msg.userId === user.id}
           />
         ))}
-      </div>
-      <form onSubmit={handleSubmit} className='flex'>
-        <input
-          type='text'
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          className='flex-1 p-2 border rounded-l text-black focus:outline-none'
-          placeholder='Digite sua mensagem...'
-        />
-        <button type='submit' className='bg-blue-500 text-black p-2 rounded-r'>
-          Enviar
-        </button>
-      </form>
-    </div>
+        <div ref={messagesEndRef} />
+      </CardContent>
+      <CardFooter>
+        <form onSubmit={handleSubmit} className='flex w-full'>
+          <Input
+            type='text'
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder='Digite sua mensagem...'
+            className='flex-grow mr-2 focus:outline-none outline-none ring-0 bg-gray-700 text-white hover:bg-gray-800 transition-colors duration-300'
+          />
+          <Button
+            type='submit'
+            className='bg-blue-600 hover:bg-blue-700 text-white'
+          >
+            Enviar
+          </Button>
+        </form>
+      </CardFooter>
+    </Card>
   );
 }

@@ -33,9 +33,7 @@ export default function RoomList() {
     };
   }, [socket]);
 
-  if (isLoading) {
-    return <div>Carregando...</div>;
-  }
+  if (isLoading) return <div>Carregando...</div>;
 
   return (
     <Card className='w-full max-w-md'>

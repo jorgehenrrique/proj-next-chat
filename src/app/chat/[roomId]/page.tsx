@@ -52,21 +52,15 @@ export default function DynamicChatRoom() {
     });
   };
 
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
+  if (loading) return <div>Carregando...</div>;
 
-  if (!room) {
-    return null;
-  }
+  if (!room) return null;
 
-  if (needPassword) {
-    return <PasswordPrompt onSubmit={handlePasswordSubmit} />;
-  }
+  if (needPassword) return <PasswordPrompt onSubmit={handlePasswordSubmit} />;
 
   return (
     <div className='container mx-auto p-4'>
-      <h1 className='text-3xl font-bold mb-4'>Chat {room.name}</h1>
+      <h1 className='text-2xl font-bold mb-4'>Chat {room.name}</h1>
       <ChatRoom roomId={roomId} />
     </div>
   );

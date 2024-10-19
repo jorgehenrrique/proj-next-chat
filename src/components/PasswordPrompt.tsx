@@ -17,7 +17,8 @@ interface PasswordPromptProps {
 export default function PasswordPrompt({ onSubmit }: PasswordPromptProps) {
   const [password, setPassword] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     onSubmit(password);
   };
 
@@ -30,13 +31,15 @@ export default function PasswordPrompt({ onSubmit }: PasswordPromptProps) {
             Esta sala é privada. Digite a senha para entrar.
           </DialogDescription>
         </DialogHeader>
-        <Input
-          type='password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder='Digite a senha da sala'
-        />
-        <Button onClick={handleSubmit}>Entrar</Button>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
+          <Input
+            type='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder='Digite a senha da sala (se houver)'
+          />
+          <Button type='submit'>Entrar</Button>
+        </form>
       </DialogContent>
     </Dialog>
   );

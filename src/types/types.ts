@@ -10,6 +10,7 @@ export interface Message {
   text: string;
   userId: string;
   username: string;
+  color: string;
   roomId: string;
 }
 

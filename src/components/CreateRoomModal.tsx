@@ -114,9 +114,7 @@ export default function CreateRoomModal() {
     }
   };
 
-  if (isLoading) {
-    return <div>Carregando...</div>;
-  }
+  if (isLoading) return <div>Carregando...</div>;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -150,7 +148,6 @@ export default function CreateRoomModal() {
           />
           <label htmlFor='isPrivate'>Sala Privada</label>
         </div>
-        {/* {isPrivate && ( */}
         <div
           className={`transition-all duration-300 ease-in-out ${
             isPrivate
@@ -165,8 +162,10 @@ export default function CreateRoomModal() {
             placeholder='Senha da sala (opcional)'
           />
         </div>
-        {/* )} */}
         <Button
+          className={`transition-all duration-300 ease-in-out ${
+            isPrivate ? '' : '-mt-4'
+          }`}
           onClick={handleCreateRoom}
           disabled={
             !roomName.trim() ||

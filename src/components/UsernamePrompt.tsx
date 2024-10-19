@@ -16,7 +16,8 @@ interface UsernamePromptProps {
 export default function UsernamePrompt({ onSubmit }: UsernamePromptProps) {
   const [username, setUsername] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (username.trim()) {
       onSubmit(username.trim());
     }
@@ -31,14 +32,16 @@ export default function UsernamePrompt({ onSubmit }: UsernamePromptProps) {
             Por favor, digite seu nome para entrar no chat.
           </DialogDescription>
         </DialogHeader>
-        <Input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder='Digite seu nome'
-        />
-        <Button onClick={handleSubmit} disabled={!username.trim()}>
-          Entrar
-        </Button>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
+          <Input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder='Digite seu nome'
+          />
+          <Button type='submit' disabled={!username.trim()}>
+            Entrar
+          </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );

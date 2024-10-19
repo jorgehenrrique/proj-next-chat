@@ -27,10 +27,10 @@ export default function UserMenu() {
   const [newUsername, setNewUsername] = useState('');
   const { user, updateUser } = useUser();
 
-  const handleChangeUsername = () => {
+  const handleChangeUsername = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (newUsername.trim() && user?.name !== newUsername.trim()) {
       updateUser(newUsername.trim());
-      localStorage.setItem('chatUsername', newUsername.trim());
       setIsOpen(false);
       setNewUsername('');
     }
@@ -66,14 +66,24 @@ export default function UserMenu() {
               Por favor, digite seu nome para usar no chat.
             </DialogDescription>
           </DialogHeader>
-          <Input
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            placeholder='Novo nome no Chat'
-          />
-          <Button onClick={handleChangeUsername} disabled={!newUsername.trim()}>
-            Salvar
-          </Button>
+          <form
+            onSubmit={handleChangeUsername}
+            className='flex flex-col gap-4 w-full'
+          >
+            <Input
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              placeholder='Novo nome no Chat'
+            />
+            <Button
+              type='submit'
+              disabled={
+                !newUsername.trim() || user?.name === newUsername.trim()
+              }
+            >
+              Salvar
+            </Button>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
