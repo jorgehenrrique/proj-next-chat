@@ -27,4 +27,5 @@ export interface Room {
   id: string;
   name: string;
   isPrivate: boolean;
+  creatorId: string;
 }

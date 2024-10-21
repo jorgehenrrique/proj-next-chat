@@ -11,7 +11,12 @@ import bcrypt from 'bcrypt';
 dotenv.config();
 
 const rooms = new Map();
-const globalRoom = { id: 'global', name: 'global', isPrivate: false };
+const globalRoom = {
+  id: 'global',
+  name: 'global',
+  isPrivate: false,
+  users: new Set(),
+};
 rooms.set(globalRoom.id, globalRoom);
 
 const {
@@ -73,52 +78,57 @@ app.prepare().then(async () => {
       // console.log(rooms);
     });
 
-    socket.on('create room', async ({ name, isPrivate, password }) => {
-      const roomNameExists = Array.from(rooms.values()).some(
-        (room) => room.name === name && !room.isPrivate
-      );
-      let roomLimit = 0;
-      let roomSize = 0;
-      if (isPrivate) {
-        roomLimit = +ROOM_PRIVATE_LIMIT;
-        roomSize = Array.from(rooms.values()).filter(
-          (room) => room.isPrivate
-        ).length;
-      } else {
-        roomLimit = +ROOM_PUBLIC_LIMIT;
-        roomSize = Array.from(rooms.values()).filter(
-          (room) => !room.isPrivate
-        ).length;
-      }
-      if (!roomNameExists && roomSize < roomLimit) {
-        const roomId = uuid();
-        let hashedPassword = null;
-        if (isPrivate) hashedPassword = await bcrypt.hash(password, 10);
-        const newRoom = {
-          id: roomId,
-          name,
-          isPrivate,
-          password: hashedPassword,
-          lastActivity: Date.now(),
-        };
-        rooms.set(roomId, newRoom);
-        io.emit('room list', {
-          publicRooms: Array.from(rooms.values()).filter(
-            (room) => !room.isPrivate
-          ),
-          privateRooms: Array.from(rooms.values()).filter(
+    socket.on(
+      'create room',
+      async ({ name, isPrivate, password, creatorId }) => {
+        const roomNameExists = Array.from(rooms.values()).some(
+          (room) => room.name === name && !room.isPrivate
+        );
+        let roomLimit = 0;
+        let roomSize = 0;
+        if (isPrivate) {
+          roomLimit = +ROOM_PRIVATE_LIMIT;
+          roomSize = Array.from(rooms.values()).filter(
             (room) => room.isPrivate
-          ),
-          publicLimit: +ROOM_PUBLIC_LIMIT,
-          privateLimit: +ROOM_PRIVATE_LIMIT,
-        });
-        socket.emit('room created', { id: roomId, name, isPrivate });
-      } else if (roomNameExists) {
-        socket.emit('room exists', name);
-      } else {
-        socket.emit('room limit reached');
+          ).length;
+        } else {
+          roomLimit = +ROOM_PUBLIC_LIMIT;
+          roomSize = Array.from(rooms.values()).filter(
+            (room) => !room.isPrivate
+          ).length;
+        }
+        if (!roomNameExists && roomSize < roomLimit) {
+          const roomId = uuid();
+          let hashedPassword = null;
+          if (isPrivate) hashedPassword = await bcrypt.hash(password, 10);
+          const newRoom = {
+            id: roomId,
+            name,
+            isPrivate,
+            password: hashedPassword,
+            lastActivity: Date.now(),
+            users: new Set(),
+            creatorId,
+          };
+          rooms.set(roomId, newRoom);
+          io.emit('room list', {
+            publicRooms: Array.from(rooms.values()).filter(
+              (room) => !room.isPrivate
+            ),
+            privateRooms: Array.from(rooms.values()).filter(
+              (room) => room.isPrivate
+            ),
+            publicLimit: +ROOM_PUBLIC_LIMIT,
+            privateLimit: +ROOM_PRIVATE_LIMIT,
+          });
+          socket.emit('room created', { id: roomId, name, isPrivate });
+        } else if (roomNameExists) {
+          socket.emit('room exists', name);
+        } else {
+          socket.emit('room limit reached');
+        }
       }
-    });
+    );
 
     // obter informações de uma sala específica
     socket.on('get room', (roomId) => {
@@ -128,6 +138,7 @@ app.prepare().then(async () => {
           id: room.id,
           name: room.name,
           isPrivate: room.isPrivate,
+          creatorId: room.creatorId,
         });
       } else {
         socket.emit('room info', null);
@@ -142,8 +153,6 @@ app.prepare().then(async () => {
         room.isPrivate &&
         (await bcrypt.compare(password, room.password))
       ) {
-        socket.join(roomId);
-        if (room) room.lastActivity = Date.now();
         socket.emit('join result', true);
       } else {
         socket.emit('join result', false);
@@ -154,13 +163,25 @@ app.prepare().then(async () => {
     socket.on('join room', (roomId) => {
       socket.join(roomId);
       const room = rooms.get(roomId);
-      if (room) room.lastActivity = Date.now();
-      console.log(`Cliente entrou na sala: ${room.name}-${roomId}`); // log
+      if (room) {
+        room.lastActivity = Date.now();
+        if (!room.users) room.users = new Set();
+        if (!room.users.has(socket.id)) room.users.add(socket.id);
+        io.to(roomId).emit('user count', room.users.size);
+      }
+      console.log(
+        `Cliente entrou na sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
+      ); // log
     });
 
     // leave room
     socket.on('leave room', (roomId) => {
       socket.leave(roomId);
+      const room = rooms.get(roomId);
+      if (room && room.users) {
+        room.users.delete(socket.id);
+        io.to(roomId).emit('user count', room.users.size);
+      }
       console.log(`Cliente saiu da sala ${roomId}`); // log
     });
 
@@ -171,8 +192,36 @@ app.prepare().then(async () => {
       if (room) room.lastActivity = Date.now();
     });
 
+    socket.on('delete room', ({ roomId, userId }) => {
+      const room = rooms.get(roomId);
+      if (room && room.creatorId === userId && roomId !== 'global') {
+        rooms.delete(roomId);
+        io.in(roomId).emit('room deleted', roomId);
+        io.in(roomId).disconnectSockets(true);
+        io.emit('room list', {
+          publicRooms: Array.from(rooms.values()).filter(
+            (room) => !room.isPrivate
+          ),
+          privateRooms: Array.from(rooms.values()).filter(
+            (room) => room.isPrivate
+          ),
+          publicLimit: +ROOM_PUBLIC_LIMIT,
+          privateLimit: +ROOM_PRIVATE_LIMIT,
+        });
+      }
+    });
+
     // disconnect
     socket.on('disconnect', () => {
+      for (const [roomId, room] of rooms) {
+        if (room.users && room.users.has(socket.id)) {
+          room.users.delete(socket.id);
+          console.log(
+            `Cliente saiu da sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
+          ); // log
+          io.to(roomId).emit('user count', room.users.size);
+        }
+      }
       console.log('Um cliente se desconectou'); // log
     });
   });

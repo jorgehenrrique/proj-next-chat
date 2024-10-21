@@ -16,6 +16,8 @@ import { toast } from '@/hooks/use-toast';
 import { Room, RoomListData } from '@/types/types';
 import { Checkbox } from './ui/checkbox';
 import Loader from './Loader/Loader';
+import UsernamePrompt from './UsernamePrompt';
+import { useUser } from '@/contexts/UserContext';
 
 export default function CreateRoomModal() {
   const [roomName, setRoomName] = useState('');
@@ -31,6 +33,7 @@ export default function CreateRoomModal() {
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSocket();
   const router = useRouter();
+  const { user, updateUser } = useUser();
 
   useEffect(() => {
     if (socket) {
@@ -98,11 +101,12 @@ export default function CreateRoomModal() {
   }, [socket, router]);
 
   const handleCreateRoom = () => {
-    if (roomName.trim() && socket) {
+    if (roomName.trim() && socket && user) {
       socket.emit('create room', {
         name: roomName.trim(),
         isPrivate,
         password: isPrivate ? password : null,
+        creatorId: user.id,
       });
     }
   };
@@ -121,13 +125,14 @@ export default function CreateRoomModal() {
           Criar Nova Sala
         </Button>
       </DialogTrigger>
-      <DialogContent className='border-b border-sky-900'>
+      <DialogContent className='border-b border-sky-900 rounded-xl'>
         <DialogHeader>
           <DialogTitle>Criar Nova Sala de Chat</DialogTitle>
           <DialogDescription>
             Crie uma nova sala de chat para começar a conversar com seus amigos.
           </DialogDescription>
         </DialogHeader>
+        {!user && <UsernamePrompt onSubmit={updateUser} />}
         <Input
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}

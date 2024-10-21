@@ -17,20 +17,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { SendIcon } from 'lucide-react';
+import { SendIcon, Users2 } from 'lucide-react';
 import { Spinner } from '@/components/Spinner';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface ChatRoomProps {
   roomId: string;
+  creatorId: string;
 }
 
-export default function ChatRoom({ roomId }: ChatRoomProps) {
+export default function ChatRoom({ roomId, creatorId }: ChatRoomProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const { user, updateUser } = useUser();
   const socket = useSocket();
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [userCount, setUserCount] = useState(0);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -48,11 +59,16 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         setMessages((prevMessages) => [...prevMessages, msg]);
       });
 
+      socket.on('user count', (count: number) => {
+        setUserCount(count);
+      });
+
       socket.on('room deleted', (deletedRoomId: string) => {
         if (deletedRoomId === roomId) {
           toast({
             title: 'Sala removida',
-            description: 'Esta sala foi removida devido à inatividade.',
+            description:
+              'Esta sala foi removida devido à inatividade ou ao criador.',
             variant: 'destructive',
           });
           router.push('/');
@@ -64,6 +80,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
       if (socket) {
         socket.emit('leave room', roomId);
         socket.off('message');
+        socket.off('user count');
         socket.off('room deleted');
       }
     };
@@ -88,13 +105,34 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     }
   };
 
+  const handleDeleteRoom = () => {
+    if (socket) {
+      socket.emit('delete room', { roomId, userId: user.id });
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
   return (
-    <Card className='w-full h-[80vh] flex flex-col bg-gray-900 text-white'>
-      {/* <CardHeader> */}
-      {/* <CardTitle>Chat Room: {roomId}</CardTitle> */}
-      {/* </CardHeader> */}
-      {/* <CardContent className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"> */}
-      <CardContent className='flex-grow overflow-y-auto my-1 shadow-sky-800 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg'>
+    <Card className='w-full h-[85vh] flex flex-col bg-gray-900 text-white rounded-xl'>
+      <CardHeader className='bg-gray-800 py-2 px-4 rounded-t-xl'>
+        <CardTitle className='flex justify-between items-center'>
+          {/* <span>Sala: {roomId}</span> */}
+          <span className='flex items-center'>
+            <Users2 className='w-4 h-4 mr-2' />
+            {userCount}
+          </span>
+          {creatorId === user.id && (
+            <Button
+              variant='destructive'
+              size='sm'
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              Remover Sala
+            </Button>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className='flex-grow overflow-y-auto mb-2 border-b border-sky-900 rounded-b-xl shadow-sky-900 shadow-[inset_0_10px_10px_-10px_rgba(0,0,0,0.3)]'>
         {messages.map((msg) => (
           <ChatMessage
             key={msg.id}
@@ -111,7 +149,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder='Digite sua mensagem...'
-            className='flex-grow mr-2 focus:outline-none outline-none ring-0 bg-gray-700 text-white hover:bg-gray-800 transition-colors duration-300'
+            className='flex-grow mr-2 focus:outline-none outline-none focus-visible:ring-0 focus-visible:bg-sky-900 bg-gray-700 text-white hover:bg-gray-800 transition-colors duration-300'
           />
           <Button
             type='submit'
@@ -121,6 +159,23 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           </Button>
         </form>
       </CardFooter>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className='border-b border-sky-900 rounded-xl'>
+          <DialogHeader>
+            <DialogTitle>Remover Sala</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja remover esta sala?
+            </DialogDescription>
+          </DialogHeader>
+          <Button variant='destructive' size='sm' onClick={handleDeleteRoom}>
+            Remover Sala
+          </Button>
+          <DialogClose asChild>
+            <Button variant='outline'>Cancelar</Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

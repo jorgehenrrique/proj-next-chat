@@ -59,11 +59,11 @@ export default function UserMenu() {
       </DropdownMenu>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className='border-b border-sky-900'>
+        <DialogContent className='border-b border-sky-900 rounded-xl'>
           <DialogHeader>
-            <DialogTitle>Alterar Nome no Chat</DialogTitle>
+            <DialogTitle>Alterar Apelido no Chat</DialogTitle>
             <DialogDescription>
-              Por favor, digite seu nome para usar no chat.
+              Por favor, digite seu apelido para usar no chat.
             </DialogDescription>
           </DialogHeader>
           <form
@@ -73,7 +73,7 @@ export default function UserMenu() {
             <Input
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
-              placeholder='Novo nome no Chat'
+              placeholder='Novo apelido no Chat'
             />
             <Button
               type='submit'
