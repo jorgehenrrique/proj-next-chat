@@ -59,7 +59,7 @@ export default function UserMenu() {
       </DropdownMenu>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className='shadow-sky-900 shadow-md'>
+        <DialogContent className='border-b border-sky-900'>
           <DialogHeader>
             <DialogTitle>Alterar Nome no Chat</DialogTitle>
             <DialogDescription>

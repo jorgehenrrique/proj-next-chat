@@ -8,7 +8,7 @@ interface ChatLayoutProps {
 export default function ChatLayout({ children }: ChatLayoutProps) {
   return (
     <div className='flex flex-col h-screen'>
-      <aside className='bg-gray-800 p-2 flex justify-between items-center shadow-md'>
+      <aside className='bg-gray-800 p-1 flex justify-between items-center border-b border-sky-900'>
         <h1 className='text-2xl font-bold'>Chat App</h1>
         <UserMenu />
       </aside>

@@ -94,7 +94,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
       {/* <CardTitle>Chat Room: {roomId}</CardTitle> */}
       {/* </CardHeader> */}
       {/* <CardContent className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"> */}
-      <CardContent className='flex-grow overflow-y-auto my-1 shadow-sky-800 shadow-lg rounded-lg'>
+      <CardContent className='flex-grow overflow-y-auto my-1 shadow-sky-800 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] rounded-lg'>
         {messages.map((msg) => (
           <ChatMessage
             key={msg.id}

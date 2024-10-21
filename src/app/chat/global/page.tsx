@@ -2,8 +2,8 @@ import ChatRoom from '@/components/ChatRoom';
 
 export default function ChatPage() {
   return (
-    <div className='container mx-auto p-4'>
-      <h1 className='text-2xl font-bold mb-4'>Chat Global</h1>
+    <div className='container mx-auto p-2'>
+      <h1 className='text-2xl font-bold mb-2'>Chat Global</h1>
       <ChatRoom roomId='global' />
     </div>
   );
