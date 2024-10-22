@@ -38,7 +38,7 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
 
   return (
     <div className='flex items-center justify-between w-full'>
-      <span className='text-lg font-bold'>Chat App</span>
+      <span className='text-lg font-bold'>ChatVortex</span>
       <span className='text-lg font-semibold'>
         {currentRoom ? `Sala: ${currentRoom.name}` : ''}
       </span>

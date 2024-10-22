@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import '../styles/globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -10,9 +10,42 @@ const geistSans = localFont({
   weight: '100 900',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#020617',
+};
+
 export const metadata: Metadata = {
-  title: 'Chat Websocket',
-  description: 'Created by Jorge Henrique',
+  title: 'ChatVortex',
+  description: 'Um chat dinâmico e rápido criado por Jorge Henrique',
+  icons: {
+    icon: [
+      {
+        url: '/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        url: '/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png',
+      },
+    ],
+    shortcut: '/favicon.ico',
+  },
+  other: {
+    icon: '/favicon-32x32.png',
+  },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    title: 'ChatVortex',
+    startupImage: '/favicon-32x32.png',
+    statusBarStyle: 'black-translucent',
+  },
+  authors: [
+    { name: 'Jorge Henrique', url: 'https://github.com/jorgehenrrique' },
+  ],
+  creator: 'Jorge Henrique',
+  publisher: 'Jorge Henrique',
 };
 
 export default function RootLayout({
