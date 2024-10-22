@@ -7,6 +7,7 @@ import { Room } from '@/types/types';
 import PasswordPrompt from '@/components/PasswordPrompt';
 import { toast } from '@/hooks/use-toast';
 import { Spinner } from '@/components/Spinner';
+import { useRoom } from '@/contexts/RoomContext';
 
 export default function DynamicChatRoom() {
   const params = useParams();
@@ -14,15 +15,15 @@ export default function DynamicChatRoom() {
   const router = useRouter();
   const socket = useSocket();
   const [loading, setLoading] = useState(true);
-  const [room, setRoom] = useState<Room | null>(null);
   const [needPassword, setNeedPassword] = useState(false);
+  const { setCurrentRoom } = useRoom();
 
   useEffect(() => {
     if (socket) {
       socket.emit('get room', roomId);
       socket.on('room info', (roomInfo: Room | null) => {
         if (roomInfo) {
-          setRoom(roomInfo);
+          setCurrentRoom(roomInfo);
           setNeedPassword(roomInfo.isPrivate);
         } else {
           router.push('/');
@@ -55,14 +56,11 @@ export default function DynamicChatRoom() {
 
   if (loading) return <Spinner />;
 
-  if (!room) return null;
-
   if (needPassword) return <PasswordPrompt onSubmit={handlePasswordSubmit} />;
 
   return (
-    <div className='container mx-auto p-2 flex flex-col items-center justify-center'>
-      <h1 className='text-2xl font-bold mb-2'>Chat {room.name}</h1>
-      <ChatRoom roomId={roomId} creatorId={room.creatorId} />
+    <div className='container mx-auto flex flex-col items-center justify-center h-full'>
+      <ChatRoom roomId={roomId} />
     </div>
   );
 }

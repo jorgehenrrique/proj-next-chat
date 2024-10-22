@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { SendIcon, Users2 } from 'lucide-react';
+import { SendIcon, Trash2Icon, Users2 } from 'lucide-react';
 import { Spinner } from '@/components/Spinner';
 import {
   Dialog,
@@ -27,13 +27,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useRoom } from '@/contexts/RoomContext';
 
 interface ChatRoomProps {
   roomId: string;
-  creatorId: string;
 }
 
-export default function ChatRoom({ roomId, creatorId }: ChatRoomProps) {
+export default function ChatRoom({ roomId }: ChatRoomProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const { user, updateUser } = useUser();
@@ -42,6 +42,7 @@ export default function ChatRoom({ roomId, creatorId }: ChatRoomProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [userCount, setUserCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { currentRoom } = useRoom();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -113,21 +114,20 @@ export default function ChatRoom({ roomId, creatorId }: ChatRoomProps) {
   };
 
   return (
-    <Card className='w-full h-[85vh] flex flex-col bg-gray-900 text-white rounded-xl'>
+    <Card className='w-full h-[88vh] mt-4 flex flex-col bg-gray-900 text-white rounded-xl overflow-hidden'>
       <CardHeader className='bg-gray-800 py-2 px-4 rounded-t-xl'>
         <CardTitle className='flex justify-between items-center'>
-          {/* <span>Sala: {roomId}</span> */}
           <span className='flex items-center'>
             <Users2 className='w-4 h-4 mr-2' />
             {userCount}
           </span>
-          {creatorId === user.id && (
+          {currentRoom?.creatorId === user.id && (
             <Button
               variant='destructive'
               size='sm'
               onClick={() => setIsDeleteDialogOpen(true)}
             >
-              Remover Sala
+              <Trash2Icon className='w-4 h-4' />
             </Button>
           )}
         </CardTitle>

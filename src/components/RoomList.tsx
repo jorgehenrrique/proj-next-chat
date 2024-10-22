@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { RoomListData } from '@/types/types';
 import Loader from './Loader/Loader';
+import { useRouter } from 'next/navigation';
 
-export default function RoomList() {
+export default function RoomList({ onRoomClick }: { onRoomClick: () => void }) {
   const [roomData, setRoomData] = useState<RoomListData>({
     publicRooms: [],
     privateRooms: [],
@@ -16,6 +17,7 @@ export default function RoomList() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSocket();
+  const router = useRouter();
 
   useEffect(() => {
     if (socket) {
@@ -36,6 +38,11 @@ export default function RoomList() {
 
   if (isLoading) return <Loader />;
 
+  const handleRoomClick = (roomId: string) => {
+    onRoomClick();
+    setTimeout(() => router.push(`/chat/${roomId}`), 500);
+  };
+
   return (
     <Card className='w-full max-w-md'>
       <CardHeader>
@@ -46,11 +53,13 @@ export default function RoomList() {
           {roomData.publicRooms &&
             roomData.publicRooms.map((room) => (
               <li key={room.id}>
-                <Link href={`/chat/${room.id}`}>
-                  <Button variant='outline' className='w-full'>
-                    {room.name}
-                  </Button>
-                </Link>
+                <Button
+                  variant='outline'
+                  className='w-full'
+                  onClick={() => handleRoomClick(room.id)}
+                >
+                  {room.name}
+                </Button>
               </li>
             ))}
         </ul>

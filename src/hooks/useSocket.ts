@@ -17,9 +17,6 @@ export const useSocket = () => {
   return socket;
 };
 
-// usar
-// const socket = useSocket();
-
 // O return neste hook personalizado (useSocket) tem várias funções importantes:
 
 // 1. Retorna o objeto 'socket':
