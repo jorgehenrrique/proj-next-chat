@@ -5,12 +5,31 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { motion } from 'framer-motion';
 
 export default function ChatMessage({ message, isOwnMessage }: MessageProps) {
   const userId = message.userId.split('-').pop();
 
+  const messageVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 260,
+        damping: 20,
+      },
+    },
+  };
+
   return (
-    <div className={`mb-2 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+    <motion.div
+      className={`mb-2 ${isOwnMessage ? 'text-right' : 'text-left'}`}
+      initial='hidden'
+      animate='visible'
+      variants={messageVariants}
+    >
       <span
         className={`inline-block p-2 rounded-3xl text-left text-sm font-semibold ${
           isOwnMessage
@@ -48,6 +67,6 @@ export default function ChatMessage({ message, isOwnMessage }: MessageProps) {
           })}
         </span>
       </span>
-    </div>
+    </motion.div>
   );
 }
