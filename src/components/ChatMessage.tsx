@@ -57,7 +57,7 @@ export default function ChatMessage({ message, isOwnMessage }: MessageProps) {
                   href={href}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-sky-400 hover:underline'
+                  className='text-sky-900 hover:underline'
                 >
                   {word}
                 </a>

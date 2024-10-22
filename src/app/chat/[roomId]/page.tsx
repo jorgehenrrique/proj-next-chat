@@ -37,7 +37,7 @@ export default function DynamicChatRoom() {
         socket.off('room list');
       }
     };
-  }, [socket, roomId, router]);
+  }, [socket, roomId, router, setCurrentRoom]);
 
   const handlePasswordSubmit = (password: string) => {
     socket?.emit('join private room', { roomId, password });
