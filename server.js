@@ -4,7 +4,7 @@ import next from 'next';
 import { Server } from 'socket.io';
 import { instrument } from '@socket.io/admin-ui';
 import dotenv from 'dotenv';
-import { generateHash } from './scripts/generate-hash.js';
+import { generateHash } from './generate-hash.js';
 import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 

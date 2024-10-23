@@ -36,8 +36,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/scripts/generate-hash.js",
-    "src/**/*.js"
+    "generate-hash.js",
+    "src/**/*.js",
+    "server.js"
   ],
   "exclude": [
     "node_modules"

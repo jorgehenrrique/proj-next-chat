@@ -7,9 +7,9 @@
     "name": "Jorge Henrique"
   },
   "scripts": {
-    "dev": "node src/server.js",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node src/server.js",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint"
   },
   "dependencies": {

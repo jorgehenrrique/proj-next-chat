@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ChatVortex
 
-## Getting Started
+ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socket.IO, que permite a criação de salas de chat públicas e privadas. O projeto foi criado para oferecer uma experiência de comunicação fluida e segura para todos os usuários. A comunicação em tempo real é estabelecida através de WebSockets usando o Socket.IO, que mantém uma conexão bidirecional persistente entre cliente e servidor, permitindo troca instantânea de mensagens e atualizações de estado das salas. O Socket.IO também oferece fallback automático para outras tecnologias de transporte quando WebSocket não está disponível, garantindo compatibilidade máxima.
 
-First, run the development server:
+## Tecnologias Utilizadas
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Next.js](https://nextjs.org): Framework React para desenvolvimento de aplicações web.
+- [Socket.IO](https://socket.io): Biblioteca para comunicação em tempo real entre cliente e servidor.
+- [React](https://reactjs.org): Biblioteca JavaScript para construção de interfaces de usuário.
+- [Tailwind CSS](https://tailwindcss.com): Framework CSS para estilização.
+- [bcrypt](https://www.npmjs.com/package/bcrypt): Biblioteca para hashing de senhas.
+- [UUID](https://www.npmjs.com/package/uuid): Biblioteca para geração de identificadores únicos.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Funcionalidades
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Criação de Salas de Chat:** Os usuários podem criar salas de chat públicas e privadas.
+- **Autenticação de Salas Privadas:** Salas privadas podem ser protegidas por senha.
+- **Listagem de Salas:** Apenas salas públicas são listadas para todos os usuários.
+- **Comunicação em Tempo Real:** Mensagens são enviadas e recebidas em tempo real.
+- **Limpeza Automática de Salas Inativas:** Salas inativas são removidas automaticamente para manter a comunidade ativa.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estrutura do Projeto
 
-## Learn More
+- **Servidor Customizado:** O servidor é implementado em `server.js` e utiliza o Socket.IO para gerenciar conexões em tempo real.
+- **Hooks Personalizados:** O hook `useSocket` é utilizado para gerenciar a conexão com o servidor Socket.IO.
+- **Componentes React:** Componentes como `ChatRoom`, `CreateRoomModal`, e `RoomList` são utilizados para gerenciar a interface do usuário.
 
-To learn more about Next.js, take a look at the following resources:
+## Métodos do Servidor
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Criação de Salas:** Os usuários podem criar salas através do evento `create room`.
+- **Entrada em Salas:** Os usuários podem entrar em salas públicas e privadas através dos eventos `join room` e `join private room`.
+- **Listagem de Salas:** O servidor emite a lista de salas disponíveis através do evento `get rooms`.
+- **Limpeza de Salas Inativas:** O servidor verifica periodicamente a atividade das salas e remove aquelas que estão inativas.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Como Executar
 
-## Deploy on Vercel
+1. Clone o repositório.
+2. Instale as dependências com `npm install`.
+3. Inicie o servidor de desenvolvimento com `npm run dev`.
+4. Para produção, execute `npm run build` seguido de `npm start`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contribuição
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT.
