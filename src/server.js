@@ -20,7 +20,6 @@ const globalRoom = {
 rooms.set(globalRoom.id, globalRoom);
 
 const {
-  HOSTNAME,
   PORT,
   ADMIN_USERNAME,
   ROOM_PUBLIC_LIMIT,
@@ -32,15 +31,20 @@ const {
 } = process.env;
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = HOSTNAME;
+const hostname = 'localhost';
 const port = PORT;
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
   const server = createServer((req, res) => {
-    const parsedUrl = parse(req.url, true);
-    handle(req, res, parsedUrl);
+    try {
+      const parsedUrl = parse(req.url, true);
+      handle(req, res, parsedUrl);
+    } catch (error) {
+      console.error('Error occurred handling', req.url, error);
+      res.status(500).send('Internal Server Error');
+    }
   });
 
   const io = new Server(server, {
@@ -60,7 +64,7 @@ app.prepare().then(async () => {
   });
 
   io.on('connection', (socket) => {
-    console.log('Um cliente se conectou'); // log
+    // console.log('Um cliente se conectou'); // log
 
     socket.on('get rooms', () => {
       const publicRooms = Array.from(rooms.values()).filter(
@@ -169,9 +173,9 @@ app.prepare().then(async () => {
         if (!room.users.has(socket.id)) room.users.add(socket.id);
         io.to(roomId).emit('user count', room.users.size);
       }
-      console.log(
-        `Cliente entrou na sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
-      ); // log
+      // console.log(
+      //   `Cliente entrou na sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
+      // ); // log
     });
 
     // leave room
@@ -182,7 +186,7 @@ app.prepare().then(async () => {
         room.users.delete(socket.id);
         io.to(roomId).emit('user count', room.users.size);
       }
-      console.log(`Cliente saiu da sala ${roomId}`); // log
+      // console.log(`Cliente saiu da sala ${roomId}`); // log
     });
 
     // message
@@ -216,13 +220,13 @@ app.prepare().then(async () => {
       for (const [roomId, room] of rooms) {
         if (room.users && room.users.has(socket.id)) {
           room.users.delete(socket.id);
-          console.log(
-            `Cliente saiu da sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
-          ); // log
+          // console.log(
+          //   `Cliente saiu da sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
+          // ); // log
           io.to(roomId).emit('user count', room.users.size);
         }
       }
-      console.log('Um cliente se desconectou'); // log
+      // console.log('Um cliente se desconectou'); // log
     });
   });
 
