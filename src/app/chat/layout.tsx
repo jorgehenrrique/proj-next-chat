@@ -26,11 +26,13 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
   return (
     <RoomProvider>
       <SlideTransition isVisible={isVisible} direction='up'>
-        <div className='flex flex-col h-screen'>
-          <aside className='bg-gray-800 px-2 py-1 flex justify-between items-center border-b border-sky-900 fixed top-0 w-full z-10'>
+        <div className='flex flex-col min-h-screen bg-gray-900'>
+          <aside className='bg-gray-800/95 backdrop-blur-sm px-4 py-1 border-b border-sky-900 sticky top-0 w-full z-10 shadow-lg shadow-sky-900/20'>
             <UserMenu onBack={handleBack} />
           </aside>
-          <main className='flex-1 overflow-hidden'>{children}</main>
+          <main className='flex-1 container mx-auto px-0 py-1.5'>
+            {children}
+          </main>
         </div>
       </SlideTransition>
     </RoomProvider>

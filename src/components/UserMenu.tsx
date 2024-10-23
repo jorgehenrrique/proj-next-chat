@@ -37,19 +37,29 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <div className='flex items-center justify-between w-full'>
-      <span className='text-lg font-bold'>ChatVortex</span>
-      <span className='text-lg font-semibold'>
-        {currentRoom ? `Sala: ${currentRoom.name}` : ''}
-      </span>
-      <div className='flex items-center'>
-        <span className='mr-2'>{user?.name || 'Usuário'}</span>
+    <div className='flex items-center justify-between w-full max-w-[1400px] mx-auto'>
+      <div className='flex items-center gap-2'>
+        <span
+          className='text-xl font-bold text-sky-500 hover:text-sky-400 cursor-pointer transition-colors duration-200'
+          onClick={onBack}
+        >
+          ChatVortex
+        </span>
+        {currentRoom && (
+          <>
+            <span className='text-gray-400'>/</span>
+            <span className='text-lg text-gray-200'>{currentRoom.name}</span>
+          </>
+        )}
+      </div>
+      <div className='flex items-center gap-2'>
+        <span className='text-gray-200'>{user?.name || 'Usuário'}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant='outline'
               size='icon'
-              className='hover:bg-sky-500 transition-colors duration-200'
+              className='hover:bg-sky-500 text-sky-500 hover:text-white transition-colors duration-200'
             >
               <User className='h-5 w-5' />
             </Button>
@@ -57,7 +67,7 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
           <DropdownMenuContent align='end'>
             <DropdownMenuItem onClick={() => setIsOpen(true)}>
               <User className='mr-2 h-4 w-4' />
-              <span>Alterar Nome</span>
+              <span>Alterar Apelido</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onBack}>
@@ -68,9 +78,9 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
         </DropdownMenu>
 
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className='border-b border-sky-900 rounded-xl'>
+          <DialogContent className='border-b border-sky-900 rounded-xl bg-gray-900/50 backdrop-blur-md'>
             <DialogHeader>
-              <DialogTitle>Alterar Apelido no Chat</DialogTitle>
+              <DialogTitle>Alterar Apelido</DialogTitle>
               <DialogDescription>
                 Por favor, digite seu apelido para usar no chat.
               </DialogDescription>
@@ -82,7 +92,7 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
               <Input
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                placeholder='Novo apelido no Chat'
+                placeholder='Novo apelido'
               />
               <Button
                 type='submit'

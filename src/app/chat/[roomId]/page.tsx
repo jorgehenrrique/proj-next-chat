@@ -59,7 +59,7 @@ export default function DynamicChatRoom() {
   if (needPassword) return <PasswordPrompt onSubmit={handlePasswordSubmit} />;
 
   return (
-    <div className='container mx-auto flex flex-col items-center justify-center h-full'>
+    <div className='h-[calc(100vh-4rem)] flex flex-col'>
       <ChatRoom roomId={roomId} />
     </div>
   );

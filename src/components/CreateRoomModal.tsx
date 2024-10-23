@@ -126,7 +126,7 @@ export default function CreateRoomModal() {
           Criar Nova Sala
         </Button>
       </DialogTrigger>
-      <DialogContent className='border-b border-sky-900 rounded-xl'>
+      <DialogContent className='border-b border-sky-900 rounded-xl bg-gray-900/50 backdrop-blur-md'>
         <DialogHeader>
           <DialogTitle>Criar Nova Sala de Chat</DialogTitle>
           <DialogDescription>

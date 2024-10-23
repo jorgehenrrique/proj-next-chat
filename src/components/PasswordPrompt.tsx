@@ -24,7 +24,7 @@ export default function PasswordPrompt({ onSubmit }: PasswordPromptProps) {
 
   return (
     <Dialog open={true}>
-      <DialogContent className='border-b border-sky-900'>
+      <DialogContent className='border-b border-sky-900 bg-gray-900/50 backdrop-blur-md'>
         <DialogHeader>
           <DialogTitle>Sala Privada</DialogTitle>
           <DialogDescription>

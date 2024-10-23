@@ -31,7 +31,7 @@ export default function ChatMessage({ message, isOwnMessage }: MessageProps) {
       variants={messageVariants}
     >
       <span
-        className={`inline-block p-2 rounded-3xl text-left text-sm font-semibold ${
+        className={`inline-block p-2 rounded-3xl text-left text-sm font-semibold break-words max-w-[85%] ${
           isOwnMessage
             ? 'bg-sky-500 text-gray-100'
             : 'bg-teal-600 text-orange-100'

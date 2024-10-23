@@ -105,3 +105,20 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #4b5563 #1f2937;
 }
+
+/* classes para suavizar a transição do blur */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* sombra suave para melhorar a separação visual */
+.card-header-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-footer-shadow {
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+}
