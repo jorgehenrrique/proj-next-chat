@@ -117,6 +117,7 @@ export default function CreateRoomModal() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          className='hover:bg-sky-500 hover:text-white transition-colors duration-300'
           disabled={
             roomData.privateRooms?.length >= roomData.privateLimit &&
             roomData.publicRooms?.length >= roomData.publicLimit

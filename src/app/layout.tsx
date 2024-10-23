@@ -16,7 +16,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'ChatVortex',
-  description: 'Um chat dinâmico e rápido criado por Jorge Henrique',
+  description:
+    'ChatVortex é uma plataforma de chat interativa que permite a criação de salas públicas e privadas, proporcionando uma experiência de comunicação fluida e segura para todos os usuários.',
   icons: {
     icon: [
       {

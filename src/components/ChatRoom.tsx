@@ -153,7 +153,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           />
           <Button
             type='submit'
-            className='bg-sky-500 hover:bg-sky-800 text-white'
+            className='bg-sky-800 text-white hover:bg-sky-500 transition-colors duration-200'
           >
             <SendIcon className='w-4 h-4' />
           </Button>

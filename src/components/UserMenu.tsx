@@ -46,7 +46,11 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
         <span className='mr-2'>{user?.name || 'Usuário'}</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='outline' size='icon'>
+            <Button
+              variant='outline'
+              size='icon'
+              className='hover:bg-sky-500 transition-colors duration-200'
+            >
               <User className='h-5 w-5' />
             </Button>
           </DropdownMenuTrigger>
