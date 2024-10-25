@@ -76,7 +76,7 @@ export default function Home() {
         </motion.div>
 
         <motion.div
-          className='flex-shrink-0 w-screen h-full flex flex-col items-center p-4 snap-start overflow-y-auto'
+          className='flex-shrink-0 w-screen h-full flex flex-col items-center p-4 snap-start overflow-y-auto bg-gradient-to-l from-sky-500/20 via-sky-900/10 to-transparent'
           initial={{ opacity: 0, x: '100%' }}
           animate={{ opacity: 1, x: '0%' }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
