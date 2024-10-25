@@ -196,9 +196,13 @@ app.prepare().then(async () => {
       if (room) room.lastActivity = Date.now();
     });
 
-    socket.on('delete room', ({ roomId, userId }) => {
+    socket.on('delete room', ({ roomId, userId, isAdmin }) => {
       const room = rooms.get(roomId);
-      if (room && room.creatorId === userId && roomId !== 'global') {
+      if (
+        room &&
+        (room.creatorId === userId || isAdmin) &&
+        roomId !== 'global'
+      ) {
         rooms.delete(roomId);
         io.in(roomId).emit('room deleted', roomId);
         io.in(roomId).disconnectSockets(true);

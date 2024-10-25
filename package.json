@@ -1,6 +1,6 @@
 {
   "name": "next-websockets-chat",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "author": {
@@ -33,7 +33,8 @@
     "socket.io-client": "^4.8.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

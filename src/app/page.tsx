@@ -41,7 +41,7 @@ export default function Home() {
           className='flex-shrink-0 w-screen h-full flex flex-col items-center justify-center p-8 snap-start relative'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
         >
           <div className='absolute inset-0 z-0'>
             <Image
@@ -105,15 +105,5 @@ export default function Home() {
         </motion.div>
       </div>
     </SlideTransition>
-    // <SlideTransition isVisible={isVisible} direction='down'>
-    //   <div className='flex flex-col items-center justify-center min-h-screen p-4'>
-    //     <h1 className='text-4xl font-bold mb-8'>ChatVortex</h1>
-    //     <CreateRoomModal />
-
-    //     <div className='mt-8'>
-    //       <RoomList onRoomClick={() => setIsVisible(false)} />
-    //     </div>
-    //   </div>
-    // </SlideTransition>
   );
 }

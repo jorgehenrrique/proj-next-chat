@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useRoom } from '@/contexts/RoomContext';
+import { useAdmin } from '@/hooks/useAdmin';
 
 interface ChatRoomProps {
   roomId: string;
@@ -43,6 +44,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   const [userCount, setUserCount] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { currentRoom } = useRoom();
+  const { isAdmin } = useAdmin();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -107,8 +109,8 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
   };
 
   const handleDeleteRoom = () => {
-    if (socket) {
-      socket.emit('delete room', { roomId, userId: user.id });
+    if (socket && (currentRoom?.creatorId === user.id || isAdmin)) {
+      socket.emit('delete room', { roomId, userId: user.id, isAdmin });
       setIsDeleteDialogOpen(false);
     }
   };
@@ -122,7 +124,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
               <Users2 className='w-4 h-4 text-sky-500' />
               <span className='text-gray-200'>{userCount}</span>
             </span>
-            {currentRoom?.creatorId === user.id && (
+            {(currentRoom?.creatorId === user.id || isAdmin) && (
               <Button
                 variant='ghost'
                 size='sm'
@@ -170,7 +172,9 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           <DialogHeader>
             <DialogTitle>Remover Sala</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja remover esta sala?
+              {isAdmin
+                ? 'Você está removendo esta sala como administrador.'
+                : 'Tem certeza que deseja remover esta sala?'}
             </DialogDescription>
           </DialogHeader>
           <Button variant='destructive' size='sm' onClick={handleDeleteRoom}>

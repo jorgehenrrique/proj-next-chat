@@ -22,7 +22,7 @@ const SlideTransition = ({
       initial='hidden'
       animate={isVisible ? 'visible' : 'hidden'}
       variants={variants}
-      transition={{ type: 'tween', ease: 'anticipate', duration: 0.6 }}
+      transition={{ type: 'tween', ease: 'anticipate', duration: 0.5 }}
       style={{
         position: 'fixed',
         top: 0,

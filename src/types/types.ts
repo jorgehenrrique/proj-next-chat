@@ -12,6 +12,7 @@ export interface Message {
   username: string;
   color: string;
   roomId: string;
+  isAdmin?: boolean;
 }
 
 // Types para as salas de chat
@@ -28,4 +29,10 @@ export interface Room {
   name: string;
   isPrivate: boolean;
   creatorId: string;
+}
+
+// Types para a autenticação do administrador
+export interface AdminAuth {
+  isAdmin: boolean;
+  token: string;
 }

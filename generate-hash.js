@@ -19,3 +19,8 @@ export async function generateHash() {
     throw error;
   }
 }
+
+export function encodeHash(hash) {
+  const encodedHash = Buffer.from(hash).toString('base64');
+  return encodedHash;
+}

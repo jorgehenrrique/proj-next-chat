@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -20,12 +20,17 @@ import {
 } from '@/components/ui/dialog';
 import { useUser } from '@/contexts/UserContext';
 import { useRoom } from '@/contexts/RoomContext';
+import { useAdmin } from '@/hooks/useAdmin';
+import { toast } from '@/hooks/use-toast';
 
 export default function UserMenu({ onBack }: { onBack: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [newUsername, setNewUsername] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const { user, updateUser } = useUser();
   const { currentRoom } = useRoom();
+  const { setAdmin, clearAdmin } = useAdmin();
 
   const handleChangeUsername = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,6 +38,25 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
       updateUser(newUsername.trim());
       setIsOpen(false);
       setNewUsername('');
+    }
+  };
+
+  const handleAdminAuth = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await setAdmin(adminPassword);
+      setIsAdminOpen(false);
+      setAdminPassword('');
+      toast({
+        title: 'Autenticado',
+        description: 'Você agora tem acesso administrativo.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Erro',
+        description: 'Senha administrativa incorreta.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -70,7 +94,17 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
               <span>Alterar Apelido</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onBack}>
+            <DropdownMenuItem onClick={() => setIsAdminOpen(true)}>
+              <ShieldCheck className='mr-2 h-4 w-4' />
+              <span>Admin</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                clearAdmin();
+                onBack();
+              }}
+            >
               <LogOut className='mr-2 h-4 w-4' />
               <span>Sair</span>
             </DropdownMenuItem>
@@ -101,6 +135,31 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
                 }
               >
                 Salvar
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isAdminOpen} onOpenChange={setIsAdminOpen}>
+          <DialogContent className='border-b border-sky-900 rounded-xl bg-gray-900/50 backdrop-blur-md'>
+            <DialogHeader>
+              <DialogTitle>Autenticação Admin</DialogTitle>
+              <DialogDescription>
+                Digite a senha de administrador
+              </DialogDescription>
+            </DialogHeader>
+            <form
+              onSubmit={handleAdminAuth}
+              className='flex flex-col gap-4 w-full'
+            >
+              <Input
+                type='password'
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder='Senha de Admin'
+              />
+              <Button type='submit' disabled={!adminPassword.trim()}>
+                Autenticar
               </Button>
             </form>
           </DialogContent>
