@@ -3,10 +3,20 @@ import { useState, useEffect } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { RoomListData } from '@/types/types';
+import { Room, RoomListData } from '@/types/types';
 import Loader from './Loader/Loader';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useAdmin } from '@/hooks/useAdmin';
+import { Trash2Icon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from '@/components/ui/dialog';
 
 export default function RoomList({ onRoomClick }: { onRoomClick: () => void }) {
   const [roomData, setRoomData] = useState<RoomListData>({
@@ -18,6 +28,9 @@ export default function RoomList({ onRoomClick }: { onRoomClick: () => void }) {
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSocket();
   const router = useRouter();
+  const { isAdmin } = useAdmin();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [room, setRoom] = useState<Room | null>(null);
 
   useEffect(() => {
     if (socket) {
@@ -43,6 +56,14 @@ export default function RoomList({ onRoomClick }: { onRoomClick: () => void }) {
     setTimeout(() => router.push(`/chat/${roomId}`), 500);
   };
 
+  const handleDeleteRoom = (roomId?: string) => {
+    if (socket && isAdmin && roomId) {
+      socket.emit('delete room', { roomId, userId: null, isAdmin });
+      setIsDeleteDialogOpen(false);
+      setRoom(null);
+    }
+  };
+
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6'>
       {roomData.publicRooms &&
@@ -65,32 +86,45 @@ export default function RoomList({ onRoomClick }: { onRoomClick: () => void }) {
                 >
                   Entrar na Sala
                 </Button>
+                {isAdmin && (
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => {
+                      setRoom(room);
+                      setIsDeleteDialogOpen(true);
+                    }}
+                    className='hover:bg-red-600/80 text-red-500 hover:text-white transition-colors duration-200 w-full'
+                  >
+                    <Trash2Icon className='w-4 h-4' />
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </motion.div>
         ))}
-    </div>
 
-    // <Card className='w-full max-w-md'>
-    //   <CardHeader>
-    //     <CardTitle>Salas de Chat Disponíveis</CardTitle>
-    //   </CardHeader>
-    //   <CardContent>
-    //     <ul className='space-y-2'>
-    //       {roomData.publicRooms &&
-    //         roomData.publicRooms.map((room) => (
-    //           <li key={room.id}>
-    //             <Button
-    //               variant='outline'
-    //               className='w-full'
-    //               onClick={() => handleRoomClick(room.id)}
-    //             >
-    //               {room.name}
-    //             </Button>
-    //           </li>
-    //         ))}
-    //     </ul>
-    //   </CardContent>
-    // </Card>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className='border-b border-sky-900 rounded-xl bg-gray-900/50 backdrop-blur-md'>
+          <DialogHeader>
+            <DialogTitle>Remover Sala</DialogTitle>
+            <DialogDescription>
+              Você está removendo esta sala: <strong>{room?.name}</strong> como
+              administrador.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            variant='destructive'
+            size='sm'
+            onClick={() => handleDeleteRoom(room?.id)}
+          >
+            Remover Sala
+          </Button>
+          <DialogClose asChild>
+            <Button variant='outline'>Cancelar</Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
