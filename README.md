@@ -41,6 +41,9 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
 - **Identificação:** ID único por usuário (visível ao passar o mouse sobre o nome)
 - **Limite de Salas:** Controle configurável para salas públicas e privadas
 - **Compartilhamento:** Links únicos para salas privadas
+- **Gerenciamento de Sala:**
+  - Contador de usuários em tempo real
+  - Criador da sala pode removê-la
 - **Administração:**
 
   - Acesso administrativo na rota `/chat` via menu de usuário
