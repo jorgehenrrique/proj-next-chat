@@ -136,6 +136,7 @@ export default function CreateRoomModal() {
         {!user && <UsernamePrompt onSubmit={updateUser} />}
         <Input
           value={roomName}
+          maxLength={30}
           onChange={(e) => setRoomName(e.target.value)}
           placeholder='Nome da sala'
         />
@@ -157,6 +158,7 @@ export default function CreateRoomModal() {
           <Input
             type='password'
             value={password}
+            maxLength={30}
             onChange={(e) => setPassword(e.target.value)}
             placeholder='Senha da sala (opcional)'
           />

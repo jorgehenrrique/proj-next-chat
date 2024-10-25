@@ -35,6 +35,7 @@ export default function UsernamePrompt({ onSubmit }: UsernamePromptProps) {
         <form onSubmit={handleSubmit} className='flex flex-col gap-4 w-full'>
           <Input
             value={username}
+            maxLength={20}
             onChange={(e) => setUsername(e.target.value)}
             placeholder='Digite seu apelido'
           />

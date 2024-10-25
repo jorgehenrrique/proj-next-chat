@@ -125,6 +125,7 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
             >
               <Input
                 value={newUsername}
+                maxLength={20}
                 onChange={(e) => setNewUsername(e.target.value)}
                 placeholder='Novo apelido'
               />
