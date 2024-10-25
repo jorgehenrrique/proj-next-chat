@@ -86,9 +86,9 @@ export default function Home() {
               Salas Disponíveis
             </h2>
             <p className='text-lg mb-6'>
-              Explore nossas salas públicas ou crie sua própria sala privada.
-              Salas inativas são automaticamente removidas para manter a
-              comunidade ativa.
+              Explore nossas salas públicas ou crie sua própria sala, seja ela
+              pública ou privada. Salas inativas são automaticamente removidas
+              para manter a comunidade ativa.
             </p>
             <div className='flex justify-between items-center mb-8'>
               <CreateRoomModal />
