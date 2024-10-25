@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   } catch (error) {
-    // console.error('Erro na autenticação admin:', error);
+    console.error('Erro na autenticação admin:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }

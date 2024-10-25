@@ -22,6 +22,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useRoom } from '@/contexts/RoomContext';
 import { useAdmin } from '@/hooks/useAdmin';
 import { toast } from '@/hooks/use-toast';
+import { usePathname } from 'next/navigation';
 
 export default function UserMenu({ onBack }: { onBack: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +32,7 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
   const { user, updateUser } = useUser();
   const { currentRoom } = useRoom();
   const { setAdmin, clearAdmin } = useAdmin();
+  const pathname = usePathname();
 
   const handleChangeUsername = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,11 +54,13 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
         description: 'Você agora tem acesso administrativo.',
       });
     } catch (error) {
+      setAdminPassword('');
       toast({
         title: 'Erro',
-        description: 'Senha administrativa incorreta.',
+        description: `${error}`,
         variant: 'destructive',
       });
+      onBack();
     }
   };
 
@@ -93,11 +97,15 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
               <User className='mr-2 h-4 w-4' />
               <span>Alterar Apelido</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsAdminOpen(true)}>
-              <ShieldCheck className='mr-2 h-4 w-4' />
-              <span>Admin</span>
-            </DropdownMenuItem>
+            {pathname === '/chat' && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setIsAdminOpen(true)}>
+                  <ShieldCheck className='mr-2 h-4 w-4' />
+                  <span>Admin</span>
+                </DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
