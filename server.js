@@ -64,8 +64,6 @@ app.prepare().then(async () => {
   });
 
   io.on('connection', (socket) => {
-    // console.log('Um cliente se conectou'); // log
-
     socket.on('get rooms', () => {
       const publicRooms = Array.from(rooms.values()).filter(
         (room) => !room.isPrivate
@@ -79,7 +77,6 @@ app.prepare().then(async () => {
         publicLimit: +ROOM_PUBLIC_LIMIT,
         privateLimit: +ROOM_PRIVATE_LIMIT,
       });
-      // console.log(rooms);
     });
 
     socket.on(
@@ -173,9 +170,6 @@ app.prepare().then(async () => {
         if (!room.users.has(socket.id)) room.users.add(socket.id);
         io.to(roomId).emit('user count', room.users.size);
       }
-      // console.log(
-      //   `Cliente entrou na sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
-      // ); // log
     });
 
     // leave room
@@ -186,7 +180,6 @@ app.prepare().then(async () => {
         room.users.delete(socket.id);
         io.to(roomId).emit('user count', room.users.size);
       }
-      // console.log(`Cliente saiu da sala ${roomId}`); // log
     });
 
     // message
@@ -196,6 +189,7 @@ app.prepare().then(async () => {
       if (room) room.lastActivity = Date.now();
     });
 
+    // delete room
     socket.on('delete room', ({ roomId, userId, isAdmin }) => {
       const room = rooms.get(roomId);
       if (
@@ -224,13 +218,9 @@ app.prepare().then(async () => {
       for (const [roomId, room] of rooms) {
         if (room.users && room.users.has(socket.id)) {
           room.users.delete(socket.id);
-          // console.log(
-          //   `Cliente saiu da sala: Nome: ${room.name} - SalaID: ${roomId} - ID: ${socket.id}`
-          // ); // log
           io.to(roomId).emit('user count', room.users.size);
         }
       }
-      // console.log('Um cliente se desconectou'); // log
     });
   });
 
