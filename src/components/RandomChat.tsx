@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, FormEvent, useRef } from 'react';
+import { useEffect, useState, FormEvent, useRef, useCallback } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useUser } from '@/contexts/UserContext';
 import { Message } from '@/types/types';
@@ -32,6 +32,15 @@ export default function RandomChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleNextPartner = useCallback(() => {
+    if (socket) {
+      setIsSearching(true);
+      setPartnerId(null);
+      setMessages([]);
+      socket.emit('next partner');
+    }
+  }, [socket]);
 
   useEffect(() => {
     if (socket && user) {
@@ -65,12 +74,11 @@ export default function RandomChat() {
         socket.off('random message');
       }
     };
-  }, [socket, user]);
+  }, [socket, user, setCurrentRoom]);
 
   useEffect(() => {
     if (socket) {
       socket.on('partner left', () => {
-        setIsSearching(true);
         setPartnerId(null);
         toast({
           title: 'Parceiro saiu',
@@ -80,15 +88,17 @@ export default function RandomChat() {
 
         if (autoNextPartner) {
           handleNextPartner();
+        } else {
+          setIsSearching(true);
+          setMessages([]);
         }
-        console.log(autoNextPartner);
       });
 
       return () => {
         socket.off('partner left');
       };
     }
-  }, [socket, autoNextPartner]);
+  }, [socket, autoNextPartner, handleNextPartner]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -104,15 +114,6 @@ export default function RandomChat() {
       socket.emit('random message', newMessage);
       setMessages((prev) => [...prev, newMessage]);
       setInputMessage('');
-    }
-  };
-
-  const handleNextPartner = () => {
-    if (socket) {
-      setIsSearching(true);
-      setPartnerId(null);
-      setMessages([]);
-      socket.emit('next partner');
     }
   };
 

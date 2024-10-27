@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'ChatVortex',
   description:
-    'ChatVortex é uma plataforma de chat interativa que permite a criação de salas públicas e privadas, proporcionando uma experiência de comunicação fluida e segura para todos os usuários.',
+    'ChatVortex é uma plataforma de chat interativa que oferece múltiplas experiências de comunicação: salas públicas, privadas e chat aleatório. Com uma interface moderna e intuitiva, permite criar salas personalizadas com senha, participar de conversas públicas ou conhecer novas pessoas através do matchmaking aleatório.',
   icons: {
     icon: [
       {
