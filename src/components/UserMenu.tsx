@@ -87,6 +87,7 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
             <Button
               variant='outline'
               size='icon'
+              title='Menu de usuário'
               className='hover:bg-sky-500 text-sky-500 hover:text-white transition-colors duration-200'
             >
               <User className='h-5 w-5' />

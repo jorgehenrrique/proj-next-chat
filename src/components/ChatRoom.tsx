@@ -129,6 +129,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
                 variant='ghost'
                 size='sm'
                 onClick={() => setIsDeleteDialogOpen(true)}
+                title='Remover sala'
                 className='hover:bg-red-600/80 text-red-500 hover:text-white transition-colors duration-200'
               >
                 <Trash2Icon className='w-4 h-4' />
@@ -159,6 +160,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
             />
             <Button
               type='submit'
+              title='Enviar mensagem'
               className='bg-sky-600/90 hover:bg-sky-500 text-white transition-colors duration-200'
             >
               <SendIcon className='w-4 h-4' />

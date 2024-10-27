@@ -19,6 +19,9 @@ const globalRoom = {
 };
 rooms.set(globalRoom.id, globalRoom);
 
+const randomQueue = new Set();
+const activeRandomChats = new Map();
+
 const {
   PORT,
   ADMIN_USERNAME,
@@ -215,6 +218,7 @@ app.prepare().then(async () => {
 
     // disconnect
     socket.on('disconnect', () => {
+      handleRandomChatDisconnect(socket.id);
       for (const [roomId, room] of rooms) {
         if (room.users && room.users.has(socket.id)) {
           room.users.delete(socket.id);
@@ -222,6 +226,30 @@ app.prepare().then(async () => {
         }
       }
     });
+
+    // join random chat events
+    socket.on('join random chat', () => {
+      randomQueue.add(socket.id);
+      matchRandomUsers();
+    });
+
+    socket.on('leave random chat', () => {
+      handleRandomChatDisconnect(socket.id);
+    });
+
+    socket.on('next partner', () => {
+      handleRandomChatDisconnect(socket.id);
+      randomQueue.add(socket.id);
+      matchRandomUsers();
+    });
+
+    socket.on('random message', (msg) => {
+      const partnerId = activeRandomChats.get(socket.id);
+      if (partnerId) {
+        io.to(partnerId).emit('random message', msg);
+      }
+    });
+    //
   });
 
   // check rooms for inactivity
@@ -253,6 +281,38 @@ app.prepare().then(async () => {
   // Agendar verificações periódicas
   setInterval(() => checkAndCleanRooms(false), CHECK_PUBLIC_ROOMS_INTERVAL);
   setInterval(() => checkAndCleanRooms(true), CHECK_PRIVATE_ROOMS_INTERVAL);
+  //
+
+  // random chat match
+  function matchRandomUsers() {
+    const queueArray = Array.from(randomQueue);
+    while (queueArray.length >= 2) {
+      const user1 = queueArray.shift();
+      const user2 = queueArray.shift();
+
+      if (user1 && user2) {
+        randomQueue.delete(user1);
+        randomQueue.delete(user2);
+
+        activeRandomChats.set(user1, user2);
+        activeRandomChats.set(user2, user1);
+
+        io.to(user1).emit('chat matched', user2);
+        io.to(user2).emit('chat matched', user1);
+      }
+    }
+  }
+
+  // handle random chat disconnect
+  function handleRandomChatDisconnect(socketId) {
+    const partnerId = activeRandomChats.get(socketId);
+    if (partnerId) {
+      io.to(partnerId).emit('partner left');
+      activeRandomChats.delete(socketId);
+      activeRandomChats.delete(partnerId);
+    }
+    randomQueue.delete(socketId);
+  }
   //
 
   server.listen(port, (err) => {
