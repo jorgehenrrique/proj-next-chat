@@ -13,6 +13,8 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
 - [Zustand](https://zustand-demo.pmnd.rs/): Biblioteca para gerenciamento de estado
 - [shadcn/ui](https://ui.shadcn.com/): Componentes reutilizáveis construídos com Radix UI e Tailwind CSS
 - [Framer Motion](https://www.framer.com/motion/): Biblioteca para animações
+- [bad-words](https://www.npmjs.com/package/bad-words): Filtro de palavras impróprias
+- [@2toad/profanity](https://www.npmjs.com/package/@2toad/profanity): Filtro adicional de conteúdo impróprio
 
 ## Características Técnicas
 
@@ -24,6 +26,7 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
   - Sistema de fallback automático para compatibilidade máxima
   - Suporte a Long-polling, HTTP streaming e JSONP polling
 - **TypeScript:** Tipagem estática para maior segurança e manutenibilidade
+- **Moderação de Conteúdo:** Sistema de filtro de palavras impróprias em português e inglês
 
 ## Funcionalidades
 
@@ -35,6 +38,7 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
 - **Listagem:** Visualização de salas públicas disponíveis
 - **Comunicação:** Troca de mensagens em tempo real
 - **Automação:** Limpeza automática de salas inativas
+- **Moderação:** Filtro automático de nomes impróprios para usuários e salas
 
 ### Detalhadas
 
@@ -55,6 +59,10 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
   - Acesso administrativo na rota `/chat` via menu de usuário
   - Permissão para deletar qualquer sala (exeto globais)
   - Logout pelo menu com redirecionamento para a página inicial
+  - **Segurança:**
+  - Filtro de conteúdo impróprio
+  - Validação de nomes de usuários e salas
+  - Proteção contra palavras ofensivas
 
   ## Interface do Usuário
 

@@ -18,6 +18,7 @@ import { Checkbox } from './ui/checkbox';
 import Loader from './Loader/Loader';
 import UsernamePrompt from './UsernamePrompt';
 import { useUser } from '@/contexts/UserContext';
+import { useContentFilter } from '@/hooks/useContentFilter';
 
 export default function CreateRoomModal() {
   const [roomName, setRoomName] = useState('');
@@ -34,6 +35,7 @@ export default function CreateRoomModal() {
   const socket = useSocket();
   const router = useRouter();
   const { user, updateUser } = useUser();
+  const { checkContent } = useContentFilter();
 
   useEffect(() => {
     if (socket) {
@@ -101,9 +103,21 @@ export default function CreateRoomModal() {
   }, [socket, router]);
 
   const handleCreateRoom = () => {
-    if (roomName.trim() && socket && user) {
+    const trimmedName = roomName.trim();
+    if (trimmedName && socket && user) {
+      const { isClean, message } = checkContent(trimmedName);
+      if (!isClean) {
+        toast({
+          title: 'Nome não permitido',
+          description: message,
+          variant: 'destructive',
+        });
+        setRoomName('');
+        return;
+      }
+
       socket.emit('create room', {
-        name: roomName.trim(),
+        name: trimmedName,
         isPrivate,
         password: isPrivate ? password : null,
         creatorId: user.id,

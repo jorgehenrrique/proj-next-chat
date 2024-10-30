@@ -23,6 +23,7 @@ import { useRoom } from '@/contexts/RoomContext';
 import { useAdmin } from '@/hooks/useAdmin';
 import { toast } from '@/hooks/use-toast';
 import { usePathname } from 'next/navigation';
+import { useContentFilter } from '@/hooks/useContentFilter';
 
 export default function UserMenu({ onBack }: { onBack: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,11 +34,26 @@ export default function UserMenu({ onBack }: { onBack: () => void }) {
   const { currentRoom } = useRoom();
   const { setAdmin, clearAdmin } = useAdmin();
   const pathname = usePathname();
+  const { checkContent } = useContentFilter();
 
   const handleChangeUsername = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newUsername.trim() && user?.name !== newUsername.trim()) {
-      updateUser(newUsername.trim());
+    const trimmedUsername = newUsername.trim();
+
+    if (trimmedUsername && user?.name !== trimmedUsername) {
+      const { isClean, message } = checkContent(trimmedUsername);
+
+      if (!isClean) {
+        toast({
+          title: 'Nome não permitido',
+          description: message,
+          variant: 'destructive',
+        });
+        setNewUsername('');
+        return;
+      }
+
+      updateUser(trimmedUsername);
       setIsOpen(false);
       setNewUsername('');
     }

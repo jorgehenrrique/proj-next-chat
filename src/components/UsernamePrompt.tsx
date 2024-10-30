@@ -8,6 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useContentFilter } from '@/hooks/useContentFilter';
+import { toast } from '@/hooks/use-toast';
 
 interface UsernamePromptProps {
   onSubmit: (username: string) => void;
@@ -15,11 +17,26 @@ interface UsernamePromptProps {
 
 export default function UsernamePrompt({ onSubmit }: UsernamePromptProps) {
   const [username, setUsername] = useState('');
+  const { checkContent } = useContentFilter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (username.trim()) {
-      onSubmit(username.trim());
+    const trimmedUsername = username.trim();
+
+    if (trimmedUsername) {
+      const { isClean, message } = checkContent(trimmedUsername);
+
+      if (!isClean) {
+        toast({
+          title: 'Nome não permitido',
+          description: message,
+          variant: 'destructive',
+        });
+        setUsername('');
+        return;
+      }
+
+      onSubmit(trimmedUsername);
     }
   };
 
