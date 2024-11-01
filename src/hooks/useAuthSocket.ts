@@ -4,10 +4,15 @@ import { toast } from './use-toast';
 
 interface UseAuthSocketProps {
   token: string;
+  serverUrl?: string;
   onAuthError?: () => void;
 }
 
-export const useAuthSocket = ({ token, onAuthError }: UseAuthSocketProps) => {
+export const useAuthSocket = ({
+  token,
+  serverUrl = process.env.NEXT_PUBLIC_SOCKET_URL || '',
+  onAuthError,
+}: UseAuthSocketProps) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,8 +24,7 @@ export const useAuthSocket = ({ token, onAuthError }: UseAuthSocketProps) => {
     }
 
     // Inicializa o socket com opções de auth
-    const socketIo = io({
-      path: '/api/socket',
+    const socketIo = io(serverUrl, {
       auth: {
         token,
       },
@@ -28,7 +32,6 @@ export const useAuthSocket = ({ token, onAuthError }: UseAuthSocketProps) => {
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       timeout: 10000,
-      transports: ['websocket', 'polling'],
     });
 
     // Handlers de conexão
@@ -91,7 +94,7 @@ export const useAuthSocket = ({ token, onAuthError }: UseAuthSocketProps) => {
       setIsConnected(false);
       setIsAuthenticated(false);
     };
-  }, [token, onAuthError]);
+  }, [token, serverUrl, onAuthError]);
 
   // Função para reconectar manualmente
   const reconnect = () => {
