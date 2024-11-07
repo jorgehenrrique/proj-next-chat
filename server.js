@@ -21,6 +21,7 @@ rooms.set(globalRoom.id, globalRoom);
 
 const randomQueue = new Set();
 const activeRandomChats = new Map();
+const videoEnabledUsers = new Set();
 
 const {
   PORT,
@@ -219,6 +220,7 @@ app.prepare().then(async () => {
     // disconnect
     socket.on('disconnect', () => {
       handleRandomChatDisconnect(socket.id);
+      videoEnabledUsers.delete(socket.id);
       for (const [roomId, room] of rooms) {
         if (room.users && room.users.has(socket.id)) {
           room.users.delete(socket.id);
@@ -248,6 +250,24 @@ app.prepare().then(async () => {
       if (partnerId) {
         io.to(partnerId).emit('random message', msg);
       }
+    });
+    //
+
+    // video
+    socket.on('video enabled', () => {
+      videoEnabledUsers.add(socket.id);
+      // Se o usuário já estiver na fila, atualiza o matchmaking
+      if (randomQueue.has(socket.id)) {
+        matchRandomUsers();
+      }
+    });
+
+    socket.on('video disabled', () => {
+      videoEnabledUsers.delete(socket.id);
+    });
+
+    socket.on('video signal', ({ signal, to }) => {
+      io.to(to).emit('video signal', { signal, from: socket.id });
     });
     //
   });
@@ -286,21 +306,42 @@ app.prepare().then(async () => {
   // random chat match
   function matchRandomUsers() {
     const queueArray = Array.from(randomQueue);
-    while (queueArray.length >= 2) {
-      const user1 = queueArray.shift();
-      const user2 = queueArray.shift();
+    const videoQueue = queueArray.filter((id) => videoEnabledUsers.has(id));
+    const normalQueue = queueArray.filter((id) => !videoEnabledUsers.has(id));
 
+    // Match video users with video users
+    while (videoQueue.length >= 2) {
+      const user1 = videoQueue.shift();
+      const user2 = videoQueue.shift();
       if (user1 && user2) {
-        randomQueue.delete(user1);
-        randomQueue.delete(user2);
-
-        activeRandomChats.set(user1, user2);
-        activeRandomChats.set(user2, user1);
-
-        io.to(user1).emit('chat matched', user2);
-        io.to(user2).emit('chat matched', user1);
+        matchUsers(user1, user2, true);
       }
     }
+
+    // Match normal users
+    while (normalQueue.length >= 2) {
+      const user1 = normalQueue.shift();
+      const user2 = normalQueue.shift();
+      if (user1 && user2) {
+        matchUsers(user1, user2, false);
+      }
+    }
+  }
+
+  // match users
+  function matchUsers(user1, user2, withVideo) {
+    // Verifica novamente se ambos ainda têm vídeo habilitado
+    // const bothHaveVideo = withVideo &&
+    // videoEnabledUsers.has(user1) &&
+    // videoEnabledUsers.has(user2);
+
+    randomQueue.delete(user1);
+    randomQueue.delete(user2);
+    activeRandomChats.set(user1, user2);
+    activeRandomChats.set(user2, user1);
+
+    io.to(user1).emit('chat matched', { partnerId: user2, withVideo });
+    io.to(user2).emit('chat matched', { partnerId: user1, withVideo });
   }
 
   // handle random chat disconnect

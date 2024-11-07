@@ -1,6 +1,6 @@
 {
   "name": "next-websockets-chat",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "type": "module",
   "author": {
@@ -31,6 +31,7 @@
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
+    "simple-peer": "^9.11.1",
     "socket.io": "^4.8.0",
     "socket.io-client": "^4.8.0",
     "tailwind-merge": "^2.5.4",
@@ -48,6 +49,7 @@
     "eslint-config-next": "14.2.15",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/simple-peer": "^9.11.8"
   }
 }

@@ -1,11 +1,13 @@
 # ChatVortex
 
-ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socket.IO, que permite a criação de salas de chat públicas e privadas, além de um sistema de chat aleatório para conversas anônimas. O projeto foi criado para oferecer uma experiência de comunicação fluida e segura para todos os usuários. A comunicação em tempo real é estabelecida através de WebSockets usando o Socket.IO, que mantém uma conexão bidirecional persistente entre cliente e servidor, permitindo troca instantânea de mensagens e atualizações de estado.
+ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socket.IO, que permite a criação de salas de chat públicas e privadas, além de um sistema de chat aleatório com suporte a videochamadas. O projeto foi criado para oferecer uma experiência de comunicação fluida e segura para todos os usuários. A comunicação em tempo real é estabelecida através de WebSockets usando o Socket.IO e WebRTC para videochamadas, permitindo troca instantânea de mensagens, vídeo e atualizações de estado.
 
 ## Tecnologias Utilizadas
 
 - [Next.js](https://nextjs.org): Framework React para desenvolvimento de aplicações web
 - [Socket.IO](https://socket.io): Biblioteca para comunicação em tempo real entre cliente e servidor
+- [WebRTC](https://webrtc.org/): Tecnologia para comunicação em tempo real de vídeo e áudio
+- [simple-peer](https://www.npmjs.com/package/simple-peer): Biblioteca para simplificar a implementação do WebRTC
 - [React](https://reactjs.org): Biblioteca JavaScript para construção de interfaces de usuário
 - [Tailwind CSS](https://tailwindcss.com): Framework CSS para estilização
 - [bcrypt](https://www.npmjs.com/package/bcrypt): Biblioteca para hashing de senhas
@@ -25,6 +27,10 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
   - Conexão bidirecional em tempo real
   - Sistema de fallback automático para compatibilidade máxima
   - Suporte a Long-polling, HTTP streaming e JSONP polling
+- **WebRTC:**
+  - Videochamadas P2P com WebRTC
+  - Compartilhamento de tela
+  - Controle de qualidade de vídeo
 - **TypeScript:** Tipagem estática para maior segurança e manutenibilidade
 - **Moderação de Conteúdo:** Sistema de filtro de palavras impróprias em português e inglês
 
@@ -33,7 +39,14 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
 ### Principais
 
 - **Salas de Chat:** Criação de salas públicas e privadas
-- **Chat Aleatório:** Sistema de matchmaking para conversas anônimas
+- **Chat Aleatório:** Sistema de matchmaking para conversas anônimas com texto e vídeo
+- **Videochamadas:**
+  - Suporte a vídeo em tempo real
+  - Compartilhamento de tela
+  - Troca de câmeras (frontal/traseira)
+  - Controle de qualidade de vídeo (240p até 1080p)
+  - Controles independentes de áudio
+  - Modo Picture-in-Picture
 - **Autenticação:** Proteção de salas privadas com senha
 - **Listagem:** Visualização de salas públicas disponíveis
 - **Comunicação:** Troca de mensagens em tempo real
@@ -51,6 +64,7 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
   - Sistema de auto-procura configurável
   - Botão para pular para próximo usuário
   - Indicador visual de status da procura
+    - Suporte a videochamadas com controles avançados
 - **Gerenciamento de Sala:**
   - Contador de usuários em tempo real
   - Criador da sala pode removê-la
@@ -63,6 +77,7 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
   - Filtro de conteúdo impróprio
   - Validação de nomes de usuários e salas
   - Proteção contra palavras ofensivas
+    - Conexões seguras para vídeo e áudio
 
   ## Interface do Usuário
 
@@ -73,6 +88,7 @@ ChatVortex é uma plataforma de chat interativa desenvolvida com Next.js e Socke
 - **Temas:** Interface escura com elementos em destaque
 - **Animações:** Transições suaves e feedback visual
 - **Tooltips:** Dicas de interface para melhor usabilidade
+- **Controles de Vídeo:** Interface intuitiva para gerenciamento de videochamadas
 
   ## Estrutura do Projeto
 

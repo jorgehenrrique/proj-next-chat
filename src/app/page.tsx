@@ -65,14 +65,39 @@ export default function Home() {
         >
           <div className='w-full max-w-4xl'>
             <h2 className='text-3xl font-bold mb-4 text-purple-400'>
-              Chat Aleatório
+              Chat Aleatório com Vídeo
             </h2>
-            <p className='text-lg mb-6'>
-              Converse com pessoas aleatórias de forma anônima e divertida.
-              Encontre novos amigos, troque experiências e conheça pessoas de
-              diferentes lugares. A qualquer momento você pode pular para o
-              próximo usuário e iniciar uma nova conversa.
-            </p>
+            <div className='space-y-1 mb-6'>
+              <p className='text-lg'>
+                Converse com pessoas aleatórias de forma anônima e divertida
+                através de texto ou vídeo. Você pode optar por:
+              </p>
+              <ul className='text-lg list-disc list-inside ml-4 space-y-2'>
+                <li>
+                  <span className='text-purple-400 font-semibold'>
+                    Chat por Texto:
+                  </span>{' '}
+                  Conversas anônimas apenas com mensagens de texto
+                </li>
+                <li>
+                  <span className='text-purple-400 font-semibold'>
+                    Chat com Vídeo:
+                  </span>{' '}
+                  Interação face a face com recursos como:
+                  <ul className='ml-6 mt-2 space-y-1 text-base'>
+                    <li>Compartilhamento de tela</li>
+                    <li>Troca de câmera (frontal/traseira)</li>
+                    <li>Ajuste de qualidade do vídeo</li>
+                    <li>Controles de áudio independentes</li>
+                  </ul>
+                </li>
+              </ul>
+              <p className='text-lg'>
+                A qualquer momento você pode pular para o próximo usuário,
+                alternar entre vídeo e texto, ou ajustar suas preferências de
+                comunicação.
+              </p>
+            </div>
             <div className='flex justify-between items-center mb-8'>
               <Button
                 onClick={() => {
@@ -115,18 +140,25 @@ export default function Home() {
               <p className='text-lg mb-4'>
                 Bem-vindo ao ChatVortex! Uma plataforma versátil de chat que
                 oferece três experiências únicas de comunicação: salas
-                personalizadas, chat global e conversas aleatórias.
+                personalizadas, chat global e conversas aleatórias, com suporte
+                a vídeo e texto em tempo real.
               </p>
               <p className='text-lg mb-4'>
                 Crie salas públicas para interagir com a comunidade ou salas
                 privadas para conversas exclusivas com amigos e familiares. Em
-                salas privadas, compartilhe o link de acesso apenas com quem
-                você desejar.
+                salas privadas, você tem total controle sobre quem pode
+                participar, compartilhando o link de acesso apenas com
+                convidados específicos.
               </p>
               <p className='text-lg mb-4'>
-                Explore nossa seção de chat aleatório para conhecer novas
-                pessoas de forma anônima e segura, ou navegue pelas salas
-                públicas para encontrar comunidades com interesses em comum.
+                No chat aleatório, você pode escolher entre conversas por texto
+                ou vídeo, com recursos avançados como compartilhamento de tela,
+                troca rápida de câmeras e controles de qualidade
+                personalizáveis. Nossa plataforma prioriza sua privacidade e
+                segurança, oferecendo total controle sobre sua experiência.
+                Alterne facilmente entre vídeo e texto, ajuste configurações de
+                áudio/vídeo, e conecte-se com outros usuários da maneira que
+                preferir.
               </p>
             </div>
             <div className='flex items-center gap-4'>

@@ -8,7 +8,7 @@ function generateRandomColor() {
   return `hsl(${hue}, 70%, 50%)`;
 }
 
-interface User {
+export interface User {
   id: string;
   name: string;
   color: string;

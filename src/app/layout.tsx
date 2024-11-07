@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'ChatVortex',
   description:
-    'ChatVortex é uma plataforma de chat interativa que oferece múltiplas experiências de comunicação: salas públicas, privadas e chat aleatório. Com uma interface moderna e intuitiva, permite criar salas personalizadas com senha, participar de conversas públicas ou conhecer novas pessoas através do matchmaking aleatório.',
+    'ChatVortex é uma plataforma de chat interativa que oferece múltiplas experiências de comunicação: salas públicas, privadas e chat aleatório com suporte a vídeo e texto. Com uma interface moderna e intuitiva, permite criar salas personalizadas com senha, participar de conversas públicas ou conhecer novas pessoas através do matchmaking aleatório. Recursos avançados incluem videochamadas com compartilhamento de tela, troca de câmeras, ajuste de qualidade de vídeo e controles independentes de áudio, proporcionando uma experiência completa de comunicação.',
   icons: {
     icon: [
       {
@@ -48,6 +48,20 @@ export const metadata: Metadata = {
   ],
   creator: 'Jorge Henrique',
   publisher: 'Jorge Henrique',
+  keywords: [
+    'chat',
+    'videochat',
+    'chat aleatório',
+    'salas de chat',
+    'chat com vídeo',
+    'compartilhamento de tela',
+    'comunicação em tempo real',
+    'chat privado',
+    'chat público',
+    'videochamada',
+    'chat anônimo',
+    'chat online',
+  ],
 };
 
 export default function RootLayout({
