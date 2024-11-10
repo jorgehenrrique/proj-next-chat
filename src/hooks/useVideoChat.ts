@@ -1,3 +1,4 @@
+import { VideoQuality } from '@/types/video';
 import { useState, useCallback } from 'react';
 import Peer from 'simple-peer';
 import { Socket } from 'socket.io-client';
@@ -13,12 +14,15 @@ export function useVideoChat(socket: Socket | null) {
 
   const startVideo = useCallback(async () => {
     try {
+      // 1. Solicita permissão e acesso à câmera/microfone
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
+      // 2. Armazena o stream local
       setLocalStream(stream);
       setVideoEnabled(true);
+      // 3. Notifica o servidor que o vídeo está habilitado
       if (socket) socket.emit('video enabled');
     } catch (err) {
       console.error('Erro ao iniciar vídeo:', err);
@@ -64,7 +68,7 @@ export function useVideoChat(socket: Socket | null) {
 
   // Ajustar qualidade do vídeo
   const setVideoQuality = useCallback(
-    (quality: 'ultra' | 'high' | 'medium' | 'low') => {
+    (quality: VideoQuality) => {
       if (localStream) {
         const videoTrack = localStream.getVideoTracks()[0];
         if (videoTrack) {
@@ -76,10 +80,10 @@ export function useVideoChat(socket: Socket | null) {
           };
           videoTrack
             .applyConstraints(constraints[quality])
-            .then
+            // .then
             // () =>
             // console.log(`Qualidade do vídeo ajustada para ${quality}`)
-            ()
+            // ()
             .catch((err) =>
               console.error('Erro ao ajustar qualidade do vídeo:', err)
             );
