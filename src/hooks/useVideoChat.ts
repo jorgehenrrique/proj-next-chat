@@ -12,6 +12,7 @@ export function useVideoChat(socket: Socket | null) {
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [isVideoMinimized, setIsVideoMinimized] = useState(false);
 
+  // Iniciar vídeo
   const startVideo = useCallback(async () => {
     try {
       // 1. Solicita permissão e acesso à câmera/microfone
@@ -23,22 +24,42 @@ export function useVideoChat(socket: Socket | null) {
       setLocalStream(stream);
       setVideoEnabled(true);
       // 3. Notifica o servidor que o vídeo está habilitado
-      if (socket) socket.emit('video enabled');
+
+      if (peer) {
+        try {
+          peer.addStream(stream);
+        } catch (err) {
+          console.error('Erro ao adicionar stream ao peer:', err);
+        }
+      }
+
+      if (socket) {
+        socket.emit('video enabled');
+        socket.emit('request video connection');
+      }
     } catch (err) {
       console.error('Erro ao iniciar vídeo:', err);
+      setVideoEnabled(false);
     }
-  }, [socket]);
+  }, [socket, peer]);
 
+  // Parar vídeo
   const stopVideo = useCallback(() => {
     if (localStream) {
+      // Para todas as tracks do stream local
       localStream.getTracks().forEach((track) => track.stop());
       setLocalStream(null);
     }
-    if (peer) {
-      peer.destroy();
-      setPeer(null);
+
+    // Não destruir o peer ao parar o vídeo
+    if (peer && localStream) {
+      try {
+        peer.removeStream(localStream);
+      } catch (err) {
+        console.error('Erro ao remover stream:', err);
+      }
     }
-    setRemoteStream(null);
+
     setVideoEnabled(false);
     if (socket) socket.emit('video disabled');
   }, [localStream, peer, socket]);

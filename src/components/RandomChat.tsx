@@ -74,8 +74,8 @@ export default function RandomChat() {
       if (peer) {
         peer.destroy();
         setPeer(null);
-        setRemoteStream(null);
       }
+      setRemoteStream(null);
 
       // Pequeno delay antes de emitir next partner
       setTimeout(() => {
@@ -106,6 +106,12 @@ export default function RandomChat() {
             withVideo ? 'um parceiro de chat com vídeo' : 'um parceiro de chat'
           }.`,
         });
+
+        if (withVideo) {
+          setTimeout(() => {
+            socket.emit('request video connection');
+          }, 500);
+        }
       });
 
       socket.on('random message', (msg: Message) => {
@@ -121,27 +127,6 @@ export default function RandomChat() {
       }
     };
   }, [socket, user, setCurrentRoom]);
-
-  // useEffect para gerenciar vídeo
-  useEffect(() => {
-    if (!socket || !videoEnabled || !localStream) return;
-
-    socket.on('video signal', handleVideoSignal);
-
-    return () => {
-      socket.off('video signal');
-    };
-  }, [socket, videoEnabled, localStream, handleVideoSignal]);
-
-  // useEffect para iniciar vídeo após match
-  useEffect(() => {
-    if (videoEnabled && localStream && partnerId && !peer) {
-      // Pequeno delay para garantir que o peer anterior foi limpo
-      setTimeout(() => {
-        initializePeer(localStream, true);
-      }, 1000);
-    }
-  }, [partnerId, videoEnabled, localStream, peer, initializePeer]);
 
   // useEffect para gerenciar desconexão do parceiro
   useEffect(() => {
@@ -159,6 +144,11 @@ export default function RandomChat() {
         } else {
           setIsSearching(true);
           setMessages([]);
+          setRemoteStream(null);
+          if (peer) {
+            peer.destroy();
+            setPeer(null);
+          }
         }
       });
 
@@ -166,7 +156,55 @@ export default function RandomChat() {
         socket.off('partner left');
       };
     }
-  }, [socket, autoNextPartner, handleNextPartner]);
+  }, [
+    socket,
+    autoNextPartner,
+    handleNextPartner,
+    peer,
+    setPeer,
+    setRemoteStream,
+  ]);
+
+  // useEffect para gerenciar vídeo
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('video signal', handleVideoSignal);
+
+    return () => {
+      socket.off('video signal');
+    };
+  }, [socket, handleVideoSignal]);
+
+  // useEffect para iniciar vídeo após match
+  // useEffect(() => {
+  //   if (videoEnabled && localStream && partnerId && !peer) {
+  //     // Pequeno delay para garantir que o peer anterior foi limpo
+  //     setTimeout(() => {
+  //       initializePeer(localStream, true);
+  //     }, 1000);
+  //   }
+  // }, [partnerId, videoEnabled, localStream, peer, initializePeer]);
+
+  // useEffect para iniciar conexão de vídeo
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('video connection requested', (requesterId) => {
+      socket.emit('accept video connection', requesterId);
+    });
+
+    socket.on('video connection accepted', () => {
+      if (localStream && partnerId && !peer) {
+        initializePeer(localStream, true);
+      }
+    });
+
+    return () => {
+      socket.off('video connection requested');
+      socket.off('video connection accepted');
+    };
+  }, [socket, localStream, partnerId, peer, initializePeer]);
 
   // Handler para envio de mensagem
   const handleSubmit = (e: FormEvent) => {
@@ -203,17 +241,18 @@ export default function RandomChat() {
         user={user as User}
         autoNextPartner={autoNextPartner}
       />
+      <div ref={messagesEndRef} />
 
       {/* VideoChat */}
-      {videoEnabled && localStream && (
+      {(localStream || remoteStream) && (
         <VideoChat
           stream={localStream}
           remoteStream={remoteStream}
           isMinimized={isVideoMinimized}
           onMinimize={() => setIsVideoMinimized(!isVideoMinimized)}
           onClose={() => {
-            stopVideo();
-            setIsVideoMinimized(false);
+            if (videoEnabled) stopVideo();
+            setIsVideoMinimized(true);
           }}
           isLocalAudioEnabled={isLocalAudioEnabled}
           isRemoteAudioEnabled={isRemoteAudioEnabled}
@@ -232,8 +271,6 @@ export default function RandomChat() {
         setInputMessage={setInputMessage}
         isSearching={isSearching}
       />
-
-      <div ref={messagesEndRef} />
     </Card>
   );
 }

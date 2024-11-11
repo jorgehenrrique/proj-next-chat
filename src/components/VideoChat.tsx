@@ -89,6 +89,7 @@ export default function VideoChat({
       initial={{ right: 20, bottom: 90 }}
     >
       <div className='relative'>
+        {/* Botões de controle superiores direitos */}
         <div className='absolute top-2 right-2 flex flex-col gap-1 z-40'>
           <Button
             size='sm'
@@ -109,65 +110,71 @@ export default function VideoChat({
           >
             {isMinimized ? <Maximize2 size={12} /> : <Minimize2 size={12} />}
           </Button>
-          <Button
-            size='sm'
-            variant='ghost'
-            onClick={onClose}
-            className='hover:bg-red-500/20'
-          >
-            <X size={12} />
-          </Button>
+          {stream && (
+            <Button
+              size='sm'
+              variant='ghost'
+              onClick={onClose}
+              className='hover:bg-red-500/20'
+            >
+              <X size={12} />
+            </Button>
+          )}
         </div>
-        <div
-          className={`absolute top-2 left-2 z-40 flex gap-2 ${
-            isMouseOver ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-200`}
-        >
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size='sm'
-                variant='ghost'
-                className='hover:bg-purple-500/20'
-                title='Qualidade do vídeo'
-              >
-                <Settings size={12} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='bg-purple-500/20'>
-              <DropdownMenuItem onClick={() => setVideoQuality('ultra')}>
-                <Video size={8} /> Ultra
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setVideoQuality('high')}>
-                <Video size={8} /> Alta
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setVideoQuality('medium')}>
-                <Video size={8} /> Média
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setVideoQuality('low')}>
-                <Video size={8} /> Baixa
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button
-            size='sm'
-            variant='ghost'
-            onClick={switchCamera}
-            className='hover:bg-purple-500/20'
-            title='Trocar câmera'
+
+        {/* Controles de vídeo (apenas visíveis quando há stream local) */}
+        {stream && (
+          <div
+            className={`absolute top-2 left-2 z-40 flex gap-2 ${
+              isMouseOver ? 'opacity-100' : 'opacity-0'
+            } transition-opacity duration-200`}
           >
-            <SwitchCamera size={12} />
-          </Button>
-          <Button
-            size='sm'
-            variant='ghost'
-            onClick={shareScreen}
-            className='hover:bg-purple-500/20'
-            title='Compartilhar tela'
-          >
-            <ScreenShare size={12} />
-          </Button>
-        </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size='sm'
+                  variant='ghost'
+                  className='hover:bg-purple-500/20'
+                  title='Qualidade do vídeo'
+                >
+                  <Settings size={12} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className='bg-purple-500/20'>
+                <DropdownMenuItem onClick={() => setVideoQuality('ultra')}>
+                  <Video size={8} /> Ultra
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setVideoQuality('high')}>
+                  <Video size={8} /> Alta
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setVideoQuality('medium')}>
+                  <Video size={8} /> Média
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setVideoQuality('low')}>
+                  <Video size={8} /> Baixa
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              size='sm'
+              variant='ghost'
+              onClick={switchCamera}
+              className='hover:bg-purple-500/20'
+              title='Trocar câmera'
+            >
+              <SwitchCamera size={12} />
+            </Button>
+            <Button
+              size='sm'
+              variant='ghost'
+              onClick={shareScreen}
+              className='hover:bg-purple-500/20'
+              title='Compartilhar tela'
+            >
+              <ScreenShare size={12} />
+            </Button>
+          </div>
+        )}
 
         {/* Controles de áudio local */}
         <div className='absolute bottom-2 left-2 z-40'>
@@ -213,29 +220,34 @@ export default function VideoChat({
 
         <div
           className={`grid ${
-            isMinimized ? 'grid-cols-1' : 'grid-cols-2'
-          } gap-2 p-2`}
+            isMinimized || !stream || !remoteStream
+              ? 'grid-cols-1'
+              : 'grid-cols-2'
+          } gap-2 p-1`}
         >
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            playsInline
-            className={`w-full rounded-lg ${
-              isMinimized ? 'h-38' : 'h-auto'
-            } object-cover`}
-          />
-          {remoteStream ? (
+          {stream && (
             <video
-              ref={remoteVideoRef}
-              autoPlay
-              playsInline
               className={`w-full rounded-lg ${
                 isMinimized ? 'hidden' : 'h-auto'
               } object-cover`}
+              autoPlay
+              playsInline
+              muted
+              ref={localVideoRef}
+            />
+          )}
+
+          {remoteStream ? (
+            <video
+              className={`w-full rounded-lg ${
+                isMinimized ? 'h-40' : 'h-auto'
+              } object-cover`}
+              autoPlay
+              playsInline
+              ref={remoteVideoRef}
             />
           ) : (
-            <div className='w-full h-auto bg-gray-800/50 rounded flex justify-center items-center'>
+            <div className='w-full min-h-[10rem] h-auto bg-gray-800/50 rounded flex justify-center items-center'>
               <Loader />
             </div>
           )}

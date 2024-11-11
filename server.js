@@ -269,6 +269,17 @@ app.prepare().then(async () => {
     socket.on('video signal', ({ signal, to }) => {
       io.to(to).emit('video signal', { signal, from: socket.id });
     });
+
+    socket.on('request video connection', () => {
+      const partnerId = activeRandomChats.get(socket.id);
+      if (partnerId) {
+        socket.to(partnerId).emit('video connection requested', socket.id);
+      }
+    });
+
+    socket.on('accept video connection', (requesterId) => {
+      io.to(requesterId).emit('video connection accepted');
+    });
     //
   });
 
