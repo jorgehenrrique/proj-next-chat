@@ -9,6 +9,7 @@ interface ChatMessagesProps {
   isSearching: boolean;
   user: User;
   autoNextPartner: boolean;
+  messagesEndRef: React.RefObject<HTMLDivElement>;
 }
 
 export function ChatMessages({
@@ -16,6 +17,7 @@ export function ChatMessages({
   isSearching,
   user,
   autoNextPartner,
+  messagesEndRef,
 }: ChatMessagesProps) {
   return (
     <CardContent className='flex-grow overflow-y-auto p-2 pt-14 pb-24 space-y-1.5'>
@@ -37,6 +39,7 @@ export function ChatMessages({
               isOwnMessage={msg.userId === user?.id}
             />
           ))}
+          <div ref={messagesEndRef} />
         </>
       )}
     </CardContent>

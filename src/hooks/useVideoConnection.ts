@@ -43,7 +43,7 @@ export function useVideoConnection({
         });
 
         newPeer.on('error', (err: Error) => {
-          console.error('[Peer] Erro:', err);
+          console.error('[Peer] Erro:', err); // debug
 
           if (partnerId) {
             console.error('Reconectando...');

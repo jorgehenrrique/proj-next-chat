@@ -240,8 +240,8 @@ export default function RandomChat() {
         isSearching={isSearching}
         user={user as User}
         autoNextPartner={autoNextPartner}
+        messagesEndRef={messagesEndRef}
       />
-      <div ref={messagesEndRef} />
 
       {/* VideoChat */}
       {(localStream || remoteStream) && (
