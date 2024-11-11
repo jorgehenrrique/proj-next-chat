@@ -35,7 +35,9 @@ export function useVideoChat(socket: Socket | null) {
 
       if (socket) {
         socket.emit('video enabled');
-        socket.emit('request video connection');
+        setTimeout(() => {
+          socket.emit('request video connection');
+        }, 1000);
       }
     } catch (err) {
       console.error('Erro ao iniciar vídeo:', err);

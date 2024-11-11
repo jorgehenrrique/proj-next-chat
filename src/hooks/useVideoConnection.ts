@@ -42,8 +42,8 @@ export function useVideoConnection({
           setRemoteStream(remoteStream);
         });
 
-        newPeer.on('error', (err: Error) => {
-          console.error('[Peer] Erro:', err); // debug
+        newPeer.on('error', () => {
+          // console.error('[Peer] Erro:', err); // debug
 
           if (partnerId) {
             console.error('Reconectando...');
@@ -53,11 +53,19 @@ export function useVideoConnection({
           }
         });
 
-        // newPeer.on('close', (err: Error) => {
-        //   console.log('[Peer] Conexão fechada', err);
-        //   // isDestroyed = true;
-        //   // setRemoteStream(null);
-        // });
+        newPeer.on('close', () => {
+          // console.log('[Peer] Conexão fechada', err);
+
+          if (peer) {
+            // console.log('Destruindo peer');
+            peer.destroy();
+            setPeer(null);
+            setRemoteStream(null);
+            // setTimeout(() => {
+            //   initializePeer(localStream as MediaStream, true);
+            // }, 2000);
+          }
+        });
 
         setPeer(newPeer);
         return newPeer;
@@ -66,7 +74,7 @@ export function useVideoConnection({
         return null;
       }
     },
-    [socket, partnerId, setRemoteStream, setPeer, localStream]
+    [socket, partnerId, setRemoteStream, setPeer, localStream, peer]
   );
 
   const handleVideoSignal = useCallback(
