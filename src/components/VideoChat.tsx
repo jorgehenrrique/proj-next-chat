@@ -247,7 +247,7 @@ export default function VideoChat({
               ref={remoteVideoRef}
             />
           ) : (
-            <div className='w-full min-h-[10rem] h-auto bg-gray-800/50 rounded flex justify-center items-center'>
+            <div className='w-full min-h-[5rem] h-auto bg-gray-800/50 rounded flex justify-center items-center'>
               <Loader />
             </div>
           )}
